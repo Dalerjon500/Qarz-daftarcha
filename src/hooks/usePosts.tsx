@@ -1,79 +1,48 @@
-import { useEffect, useState } from "react";
-import apiClient from "../apiClient/apiClient";
-import type { Post } from "../types/types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import type { FieldValues } from "react-hook-form";
+import { getPosts, createPosts, updatePosts, deletePosts } from "../myApi/apiPosts";
 
-function usePosts() {
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [page, setPage] = useState(1);
-    const [selectedUser, setSelectedUser] = useState<number | "">("");
-    const [hasMore, setHasMore] = useState(true);
-    const limit = 10;
+function usePosts(page: number, selectedUser: number | "") {
+  const queryClient = useQueryClient();
 
-    useEffect(() => {
-        getPosts(page);
-    }, [page, selectedUser]);
+  const postsQuery = useQuery({
+    queryKey: ["posts", { page, selectedUser }],
+    queryFn: () => getPosts(page, selectedUser),
+    staleTime: 1000 * 60,
+  });
 
-      const getPosts = (pageNumber: number) => {
-          let url = `/posts?_page=${pageNumber}&_limit=${limit}`;
-          if (selectedUser !== "") url += `&userId=${selectedUser}`;
+  const createPost = useMutation({
+    mutationFn: createPosts,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      toast.success("Post created successfully!");
+    },
+  });
 
-          apiClient.get<Post[]>(url)
-            .then((res) => {
-              if (res.data.length < limit){
-                setHasMore(false);
-              }
-              if (pageNumber === 1) {
-                setPosts(res.data);
-              } else {
-                setPosts((prev) => [...prev, ...res.data]);
-              }
-            })
-            .catch((error) => {
-              console.error("Error fetching posts:", error);
-            });
-      };
+  const updatePost = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: FieldValues }) =>
+      updatePosts(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      toast.success("Post updated successfully!");
+    },
+  });
 
-    const loadMore = () => setPage((prev) => prev + 1);
+  const deletePost = useMutation({
+    mutationFn: (id: number) => deletePosts(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      toast.success("Post deleted successfully!");
+    },
+  });
 
-    const createPost = (data: FieldValues) => {
-        apiClient.post('/posts', data)
-          .then((res) => {
-            setPosts([res.data, ...posts]);
-            toast.success('Post created successfully!');
-          })
-          .catch((error) => {
-            console.error('Error creating post:', error);
-          });
-    }
-
-    const updatePost = async (id: number, data: FieldValues) => {
-      try {
-        const res = await apiClient.put(`/posts/${id}`, data);
-        const updatedPosts = posts.map(post => post.id === id ? res.data : post);
-        setPosts(updatedPosts);
-        toast.success("Post updated successfully");
-        return res.data;
-      } catch (err) {
-        console.log(err);
-        toast.error("Error updating post");
-        throw err;
-      }
-    }
-
-    const deletePost = async (id: number) => {
-        try {
-          await apiClient.delete(`/posts/${id}`);
-          setPosts(posts.filter(post => post.id !== id));
-          toast.success("Post deleted successfully");
-        } catch (err) {
-          console.log(err);
-          toast.error("Error deleting post");
-        }
-    }
-
-  return { posts,createPost, updatePost, deletePost, setSelectedUser, selectedUser, loadMore, hasMore};
+  return {
+    postsQuery,
+    createPost: createPost.mutate,
+    updatePost: updatePost.mutate,
+    deletePost: deletePost.mutate,
+  };
 }
 
 export default usePosts;

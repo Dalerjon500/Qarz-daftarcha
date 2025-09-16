@@ -1,5 +1,5 @@
 import type {FieldValues } from "react-hook-form";
-import apiClient from "./apiClient";
+import apiClient from "../apiClient/apiClient";
 
 export const getAlbums = async () => {
     try {

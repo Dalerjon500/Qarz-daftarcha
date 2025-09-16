@@ -1,11 +1,10 @@
-import PostsList from "./lists/posts/PostsList"
-import UserList from "./lists/users/UserList";
-import TodosList from "./lists/todos/TodosList";
+import PostsList from "./components/posts/PostsList"
+import UserList from "./components/users/UserList";
+import TodosList from "./components/todos/TodosList";
 import { NavLink, Route, Routes } from "react-router-dom";
-import CommentList from "./lists/comments/CommentList";
-import AlbumList from "./lists/albums/AlbumList";
-import PhotosList from "./lists/albums/PhotosList";
-
+import CommentList from "./components/comments/CommentList";
+import AlbumList from "./components/albums/AlbumList";
+import PhotosList from "./components/albums/PhotosList";
 
 function App() {
 

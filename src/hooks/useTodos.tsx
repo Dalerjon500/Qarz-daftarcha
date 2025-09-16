@@ -1,51 +1,51 @@
-import { useEffect, useState } from "react";
-import apiClient from "../apiClient/apiClient";
-import type { Todos } from "../types/types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { getTodos, createTodos, updateTodos, deleteTodos, changeStatus } from "../myApi/apiTodos";
+import type { FieldValues } from "react-hook-form";
 
-function useTodos() {
-    const [todos, setTodos] = useState<Todos[]>([]);
-    const [page, setPage] = useState(1)
-    const [pageSize, setPageSize] = useState(10)
-    const [limit, setLimit] = useState(7)
-    const [currentFilter, setCurrentFilter] = useState("")
-    const [selectedUser, setSelectedUser] = useState<number | "">("");
+function useTodos(page: number, selectedUser: number | "", currentFilter: string) {
+  const queryClient = useQueryClient();
 
-    useEffect(() => {
-        getTodos();
-    }, [currentFilter, selectedUser]);
+  const todosQuery = useQuery({
+    queryKey: ["todos", { page, selectedUser, currentFilter }],
+    queryFn: () => getTodos(page, selectedUser, currentFilter),
+    staleTime: 1000 * 60,
+  });
 
-    function getTodos() {
-        const filter = currentFilter;
-        let updatedUrl = filter !== "" ? `/todos?_page=${page}&_limit=${limit}&completed=${filter}` : `/todos?_page=${page}&_limit=${limit}`;
+  const createTodo = useMutation({
+    mutationFn: createTodos,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      toast.success("Todo created successfully!");
+    },
+  });
 
-        if (selectedUser !== "") {
-            updatedUrl += `&userId=${selectedUser}`;
-        }
+  const updateTodo = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: FieldValues }) =>
+      updateTodos(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      toast.success("Todo updated successfully!");
+    },
+  });
 
-        apiClient.get<Todos[]>(updatedUrl)
-        .then((res) => {
-            setPageSize(Math.floor(res.headers["x-total-count"] / limit)); 
-            setTodos(res.data);
-        })
-        .catch((error) => {
-            console.error('Error fetching users:', error);
-        });
-    }
+  const deleteTodo = useMutation({
+    mutationFn: (id: number) => deleteTodos(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      toast.success("Todo deleted successfully!");
+    },
+  });
 
-    function changeStatus(todo: Todos) {
-          apiClient.patch(`/todos/${todo.id}`, {completed: !todo.completed})
-              .then(() => {
-                  toast.success('Status changed successfully!');
-                  getTodos();
-              })
-              .catch((error) => {
-                  console.error('Error fetching users:', error);
-              })
-      }
+  const toggleStatus = useMutation({
+    mutationFn: changeStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      toast.success("Status changed!");
+    },
+  });
 
-
-  return { todos, changeStatus, setPage, pageSize, limit, setLimit, currentFilter, setCurrentFilter, selectedUser, setSelectedUser };
+  return { todosQuery, createTodo, updateTodo, deleteTodo, toggleStatus };
 }
 
-export default useTodos
+export default useTodos;

@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAlbums, postAlbums, deleteAlbums } from "../apiClient/myApi";
+import { getAlbums, postAlbums, deleteAlbums } from "../myApi/apiAlbums";
+import { toast } from "react-toastify";
 
 function useAlbums() {
   const queryClient = useQueryClient();
@@ -14,6 +15,7 @@ function useAlbums() {
     mutationFn: postAlbums,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["albums"] });
+      toast.success("Album created successfully!");
     },
   });
 
@@ -21,6 +23,7 @@ function useAlbums() {
     mutationFn: deleteAlbums,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["albums"] });
+      toast.success("Album deleted successfully!");
     },
   });
 

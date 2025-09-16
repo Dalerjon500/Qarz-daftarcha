@@ -1,6 +1,5 @@
 import { useState } from "react";
-import usePosts from "../../hooks/usePosts";
-import { BiLike } from 'react-icons/bi';
+import { BiLike } from "react-icons/bi";
 import AddPostModal from "./AddPostModal";
 import { FaEdit, FaTrash, FaPlus, FaFilter } from "react-icons/fa";
 import type { Post } from "../../types/types";
@@ -10,11 +9,17 @@ import UserSelect from "./UserSelect";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { GoComment } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
+import usePosts from "../../hooks/usePosts";
 
 function PostsList() {
-  const { posts, createPost, updatePost, deletePost, setSelectedUser, selectedUser, loadMore, hasMore } = usePosts();
+  const [page, setPage] = useState(1);
+  const [selectedUser, setSelectedUser] = useState<number | "">("");
+  const { postsQuery, createPost, updatePost, deletePost } = usePosts(
+    page,
+    selectedUser
+  );
   const { users } = useUsers();
-  const [isOpen, setOpen] = useState(false)
+  const [isOpen, setOpen] = useState(false);
   const [editPost, setEditPost] = useState<Post | null>(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [deletePostId, setDeletePostId] = useState<number | null>(null);
@@ -23,23 +28,29 @@ function PostsList() {
 
   const getRandomColor = () => {
     const colors = [
-      'linear-gradient(135deg, #43cea2, #185a9d)',
-      'linear-gradient(135deg, #ff4e50, #f9d423)',
-      'linear-gradient(135deg, #654ea3, #eaafc8)',
-      'linear-gradient(135deg, #3a7bd5, #00d2ff)',
-      'linear-gradient(135deg, #ff5f6d, #ffc371)',
-      'linear-gradient(135deg, #8e2de2, #4a00e0)',
-      'linear-gradient(135deg, #3494E6, #EC6EAD)',
-      'linear-gradient(135deg, #2b5876, #4e4376)',
-      'linear-gradient(135deg, #396afc, #2948ff)'
+      "linear-gradient(135deg, #43cea2, #185a9d)",
+      "linear-gradient(135deg, #ff4e50, #f9d423)",
+      "linear-gradient(135deg, #654ea3, #eaafc8)",
+      "linear-gradient(135deg, #3a7bd5, #00d2ff)",
+      "linear-gradient(135deg, #ff5f6d, #ffc371)",
+      "linear-gradient(135deg, #8e2de2, #4a00e0)",
+      "linear-gradient(135deg, #3494E6, #EC6EAD)",
+      "linear-gradient(135deg, #2b5876, #4e4376)",
+      "linear-gradient(135deg, #396afc, #2948ff)",
     ];
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
+  if (postsQuery.isLoading)
+    return <p className="text-center p-4">Loading posts...</p>;
+  if (postsQuery.isError)
+    return <p className="text-center text-red-500 p-4">Error loading posts</p>;
+
+  const posts = postsQuery.data || [];
+
   return (
     <div className="min-w-full p-4">
-
-      <div className="mb-6 p-4 ">
+      <div className="mb-6 p-4">
         <div className="text-center border-b pb-3">
           <h1 className="text-xl">Posts List</h1>
         </div>
@@ -48,7 +59,6 @@ function PostsList() {
       <div className="mb-6">
         <div className="bg-white dark:bg-gray-800 shadow-sm rounded-2xl p-4">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-
             <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
               <button
                 onClick={() => setShowFilter(!showFilter)}
@@ -62,11 +72,14 @@ function PostsList() {
                   <UserSelect
                     users={users}
                     selectedUser={selectedUser}
-                    setSelectedUser={setSelectedUser}
+                    setSelectedUser={(val) => {
+                      setSelectedUser(val);
+                    }}
                   />
                 </div>
               )}
             </div>
+
             <button
               onClick={() => {
                 setOpen(true);
@@ -79,11 +92,12 @@ function PostsList() {
           </div>
         </div>
       </div>
+
       <div className="w-full">
         <InfiniteScroll
           dataLength={posts.length}
-          next={loadMore}
-          hasMore={hasMore}
+          next={() => setPage((prev) => prev + 1)}
+          hasMore={posts.length % 10 === 0}
           loader={
             <div className="flex justify-center my-6">
               <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -96,7 +110,7 @@ function PostsList() {
           }
         >
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-            {posts.map((post) => (
+            {posts.map((post: Post) => (
               <div
                 key={post.id}
                 className="bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 flex flex-col h-full"
@@ -123,14 +137,17 @@ function PostsList() {
                   <p className="text-gray-600 dark:text-gray-300 text-sm mt-2 line-clamp-3">
                     {post.body.substring(0, 100)}...
                   </p>
-                  
+
                   <div className="flex items-center justify-between mt-auto pt-4">
                     <small className="text-gray-500 text-xs">
                       Posted by User {post.userId}
                     </small>
                     <div className="flex items-center gap-2">
-                      <GoComment className="text-blue-600 cursor-pointer hover:text-blue-800 transition-all duration-200 hover:scale-110" size={20} 
-                      onClick={() => navigate(`/posts/${post.id}/comments`)}/>
+                      <GoComment
+                        className="text-blue-600 cursor-pointer hover:text-blue-800 transition-all duration-200 hover:scale-110"
+                        size={20}
+                        onClick={() => navigate(`/posts/${post.id}/comments`)}
+                      />
                       <button
                         onClick={() => {
                           setOpen(true);
@@ -157,24 +174,26 @@ function PostsList() {
           </div>
         </InfiniteScroll>
       </div>
-      
+
       {posts.length === 0 && (
         <div className="row text-center mt-5">
           <div className="col">
             <div className="empty-state p-5">
               <BiLike className="empty-icon display-1 text-muted opacity-25" />
               <h5 className="mt-3 text-muted">No posts found.</h5>
-              <p className="text-muted">Try changing your filters or create a new post.</p>
+              <p className="text-muted">
+                Try changing your filters or create a new post.
+              </p>
             </div>
           </div>
         </div>
       )}
-      
-      <AddPostModal 
-        isOpen={isOpen} 
-        setOpen={setOpen} 
-        createPost={createPost} 
-        updatePost={updatePost} 
+
+      <AddPostModal
+        isOpen={isOpen}
+        setOpen={setOpen}
+        createPost={createPost}
+        updatePost={(id, data) => updatePost({ id, data })}
         editPost={editPost}
       />
 
