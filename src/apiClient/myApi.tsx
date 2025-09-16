@@ -27,3 +27,13 @@ export const deleteAlbums = async (id: number) => {
         console.error('Error fetching users:', error);
     }
 };
+
+export const updateAlbums = async (id: number, data: FieldValues) => {
+    try {
+      const response = await apiClient.put(`/albums/${id}`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating album:', error);
+      throw error;
+    }
+}

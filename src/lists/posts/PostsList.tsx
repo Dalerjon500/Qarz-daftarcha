@@ -90,7 +90,7 @@ function PostsList() {
             </div>
           }
           endMessage={
-            <div className="text-center text-gray-500 p-4 border-t">
+            <div className="text-center text-gray-500 p-4">
               All posts loaded ✅
             </div>
           }

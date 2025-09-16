@@ -6,8 +6,9 @@ import CommentList from "./lists/comments/CommentList";
 import AlbumList from "./lists/albums/AlbumList";
 import PhotosList from "./lists/albums/PhotosList";
 
+
 function App() {
-  
+
   return (
     <div className="container mx-auto p-4">
       <div className="flex gap-4">
@@ -38,7 +39,6 @@ function App() {
         <Route path="*" element={<div>404 page not found</div>} />
       </Routes>
     </div>
-
   )
 }
 

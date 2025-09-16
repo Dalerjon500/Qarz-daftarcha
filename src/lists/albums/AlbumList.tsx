@@ -3,6 +3,7 @@ import { useState } from "react";
 import useAlbums from "../../hooks/useAlbums";
 import { useNavigate } from "react-router-dom";
 
+
 function AlbumList() {
     const [inpAlbum, setInpAlbum] = useState("")
     const {albumsQuery, createAlbum, removeAlbum } = useAlbums();
