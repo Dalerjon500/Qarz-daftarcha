@@ -1,7 +1,7 @@
 import {useEffect, useReducer, type Dispatch, type ReactNode } from 'react'
 import { MyContext } from '../context/MyContext';
 import apiClient from '../apiClient/apiClient';
-import type { User } from '../types/types';
+import type { Product, User } from '../types/types';
 
 export interface ContextType {
     state: TypeState
@@ -11,7 +11,7 @@ export interface ContextType {
 export interface TypeState {
     user: User | null,
     isLoading: boolean,
-    users: User[]
+    cart: Product[]
 }
 
 type SETAction = { type: "SET_USER", payload: User }
@@ -20,9 +20,10 @@ type SETLoadingAction = { type: "SET_LOADING", payload: boolean }
 type EDITUserAction = { type: "EDIT_USER", payload: Partial<User> }
 type CHANGE_PASSWORDAction = { type: "CHANGE_PASSWORD", payload: string }
 type AddUserAction = { type: "ADD_USER" }
+type REMOVE_FROM_CARTAction = { type: "REMOVE_FROM_CART", payload: string }
+type ADD_TO_CARTAction = { type: "ADD_TO_CART", payload: Product }
 
-
-type Action = SETAction | LOGOUTAction | SETLoadingAction | EDITUserAction | CHANGE_PASSWORDAction | AddUserAction
+type Action = SETAction | LOGOUTAction | SETLoadingAction | EDITUserAction | CHANGE_PASSWORDAction | AddUserAction | REMOVE_FROM_CARTAction | ADD_TO_CARTAction
 
 
 export interface ContextType {
@@ -44,11 +45,12 @@ function reducer(state: TypeState, action: Action): TypeState {
         case "SET_LOADING":
             console.log("loading", action.payload)
             return { ...state, isLoading: action.payload as boolean }
-        case "ADD_USER":
-            return { ...state, users: [...state.users, 
-                { id: state.users.length + 1, name: `Muslima ${state.users.length + 1}` , username: "Mary", email: "muslima@example.com", phone: "684273468122803" }] }
+         case "ADD_TO_CART":
+            return { ...state, cart: [...state.cart, action.payload] }
+        case "REMOVE_FROM_CART":
+            return { ...state, cart: state.cart.filter((p) => p.id !== action.payload) }
         default:
-            return state
+            return state;
     }
 }
 
@@ -56,26 +58,17 @@ function CreateContextPro({ children }: { children: ReactNode }) {
     const [state, dispatch] = useReducer(reducer, {
         user: null,
         isLoading : true,
-        users:[
-            {
-                id: 1,
-                name: "Leanne Graham",
-                username: "Bret",
-                email: "jKt5l@example.com",
-                phone: "1-770-736-8031 x56442"
-            },
-            {
-                id: 2,
-                name: "Ervin Howell",
-                username: "Antonette",
-                email: "4dDxW@example.com",
-                phone: "010-692-6593 x09125"
-            } 
-        ]
+        cart: JSON.parse(localStorage.getItem("cart") || "[]") as Product[]
     })
 
 
+
     useEffect(() => {
+        fetchUser()
+        localStorage.setItem("cart", JSON.stringify(state.cart));
+    }, [state.cart])
+
+    const fetchUser = async () => {
         const token = localStorage.getItem("token")
         apiClient.get<User>("/users/" + token).then(res => {
             dispatch({ type: "SET_USER", payload: res.data })
@@ -84,7 +77,7 @@ function CreateContextPro({ children }: { children: ReactNode }) {
         }).finally(() => {                
             dispatch({ type: "SET_LOADING", payload: false })
         })
-    }, [])
+    }
 
 
     return (

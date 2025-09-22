@@ -81,7 +81,7 @@ function ProductList({ currentFilter }: Props) {
 
                                 <div className={`product-info ${isClicked ? "hidden" : ""}`}>
                                     <p className="product-description">
-                                        {product.description.substring(0, 50)}...
+                                        {product.description}...
                                     </p>
                                     <div className="product-pricing">
                                         <div className="price-container">

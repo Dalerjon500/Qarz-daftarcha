@@ -71,7 +71,7 @@ function Hero() {
               <span className="hero-title-accent">{item.title2}</span>
             </h1>
             <p className="hero-para">
-              {item.desc}
+              {item.descreption}
             </p>
             <div className="hero-buttons">
               <button className="cta-button primary">

@@ -2,10 +2,23 @@ import { useState } from "react";
 import FilterCategories from "../product/FilterCategories"
 import useProducts from "../../hooks/useProducts";
 import { Rating } from "@mui/material";
+import useContextPro from "../../hooks/useContextPro";
+import type { Product } from "../../types/types";
 
 function BestSelling() {
     const [currentFilter, setCurrentFilter] = useState<string>("");
     const { productQuery } = useProducts(currentFilter);
+    const { state:{cart}, dispatch } = useContextPro();
+
+    function handleCartToggle(product: Product) {
+        const isInCart = cart.some((p) => p.id === product.id);
+
+        if (isInCart) {
+            dispatch({ type: "REMOVE_FROM_CART", payload: product.id })
+        } else {
+            dispatch({ type: "ADD_TO_CART", payload: product })
+        }
+    }
 
   return (
     <div className="best-selling">
@@ -24,7 +37,9 @@ function BestSelling() {
                             <div className="best-selling-product-info">
                                 <h6>{product.name}</h6>
                                 <p><span className="old-price">${product.oldPrice}</span>${product.price}</p>
-                                <button>Buy Now</button>
+                                <button onClick={() => handleCartToggle(product)}>
+                                    {cart.some((p) => p.id === product.id) ? "Delete from Cart" : "Buy Now"}
+                                </button>
                                 <div className="rating-container">
                                     <Rating className="rating" name="read-only" value={product.rating} size="small" />
                                     <span className="rating">({product.rating})</span>

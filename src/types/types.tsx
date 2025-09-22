@@ -23,12 +23,13 @@ export interface Product {
   imageUrl: string;
   weight: string;
   rating: number;
+  createdAt: Date;
 }
 
 export interface CarouselItem {
   id: string;
   title1: string;
   title2: string;
-  desc: string;
+  descreption: string;
   imgUrl: string;
 }

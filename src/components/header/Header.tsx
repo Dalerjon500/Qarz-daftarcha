@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { IoIosMenu } from 'react-icons/io';
 
 function Header() {
-    const { state:{ user}, dispatch } = useContextPro();
+    const { state:{ user, cart}, dispatch } = useContextPro();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -61,7 +61,19 @@ function Header() {
                     type="text" 
                 />
             </div>
-            <img className='cart-logo' src={cartLogo} alt="cart-logo" />
+            <div className="relative inline-block">
+              <img
+                onClick={() => navigate("/cart")}
+                className="cart-logo cursor-pointer"
+                src={cartLogo}
+                alt="cart-logo"
+              />
+              {cart.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                  {cart.length}
+                </span>
+              )}
+            </div>
             {!user ? (
                 <div>
                     <img className='user-logo' onClick={() => navigate("/login")} src={userLogo} alt="user-logo" />

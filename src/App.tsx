@@ -9,6 +9,7 @@ import AdminLayout from "./layout/AdminLayout"
 import useLoading from "./hooks/useLoading"
 import IsLoading from "./components/IsLoading"
 import NotFound from "./components/NotFound"
+import CartPage from "./pages/cart/CartPage"
 
 function App() {
   const { loading } = useLoading();
@@ -22,6 +23,7 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/cart" element={<CartPage />} />
         </Route>
 
         <Route element={<AuthLayout />}>

@@ -8,7 +8,10 @@ function SellingProducts() {
     const [currentFilter, setCurrentFilter] = useState<string>("");
 
     if (categoryQuery.isLoading) {
-        return <div>Loading...</div>;
+        return <div className="products-loading">
+                    <div className="loading-spinner"></div>
+                    <p>Loading...</p>
+                </div>
     }
     if (categoryQuery.isError) {
         return <div>Error: {(categoryQuery.error as Error).message}</div>;
