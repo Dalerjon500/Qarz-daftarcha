@@ -11,6 +11,7 @@ export interface User {
 export interface Category {
   id: string;
   name: string;
+  createdAt: Date;
 }
 
 export interface Product {
@@ -32,4 +33,5 @@ export interface CarouselItem {
   title2: string;
   descreption: string;
   imgUrl: string;
+  createdAt: Date;
 }

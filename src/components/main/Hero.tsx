@@ -1,4 +1,3 @@
-
 import orange from "../../assets/004-orange-juice.svg";
 import brocolli from "../../assets/003-broccoli.svg";
 import fish from "../../assets/005-fish.svg";
@@ -13,7 +12,7 @@ import useCarousel from "../../hooks/useCarousel";
 import type { CarouselItem } from "../../types/types";
 
 function Hero() {
-  const { carouselQuery } = useCarousel();
+  const { carousel } = useCarousel();
 
   const settings = {
     dots: true,
@@ -46,19 +45,6 @@ function Hero() {
       }
     ]
   };
-
-
-  const carousel = carouselQuery.data;
-
-  if (carouselQuery.isLoading) {
-    return <div className="products-loading">
-                <div className="loading-spinner"></div>
-                <p>Loading...</p>
-            </div>;
-  }
-  if (carouselQuery.isError) {
-    return <div>Error loading carousel data.</div>;
-  }
 
   return (
     <div className="hero-container">

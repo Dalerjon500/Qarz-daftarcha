@@ -1,56 +1,28 @@
-import React from 'react'
-import useCategories from '../../hooks/useCategories';
 import type { Category } from '../../types/types';
+import useCategories from '../../hooks/useCategories';
+import useProducts from '../../hooks/useProducts';
 
-type Props = {
-    currentFilter: string,
-    setCurrentFilter: React.Dispatch<React.SetStateAction<string>>
-}
 
-function FilterCategories({ currentFilter, setCurrentFilter }: Props) {
-  const { categoryQuery } = useCategories();
+function FilterCategories() {
+  const {selectedCategory, setSelectedCategory} = useProducts()
+  const {categories} = useCategories();
 
-  if (categoryQuery.isLoading) {
-      return (
-        <div className="filter-categories-loading">
-          <div className="loading-dots">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <p>Loading categories...</p>
-        </div>
-      );
-  }
-
-  if (categoryQuery.isError) {
-      return (
-        <div className="filter-categories-error">
-          <div className="error-icon">⚠️</div>
-          <p>Error loading categories</p>
-          <button onClick={() => categoryQuery.refetch()} className="retry-btn">
-            Try Again
-          </button>
-        </div>
-      );
-  }
-
-  const categories = categoryQuery.data as Category[];
+  console.log("selectedCategory", selectedCategory)
 
   return (
     <div className="filter-categories">
       <div className="categories-list">
         <div
-            className={`category-item ${currentFilter === "" ? "active" : ""}`}
-            onClick={() => setCurrentFilter("")}
+            className={`category-item ${selectedCategory === "" ? "active" : ""}`}
+            onClick={() => setSelectedCategory("")}
           >
             <span>All</span>
           </div>
         {categories.map((category: Category) => (
           <div
             key={category.id}
-            className={`category-item ${category.id === currentFilter ? "active" : ""}`}
-            onClick={() => setCurrentFilter(category.id)}
+            className={`category-item ${category.id === selectedCategory ? "active" : ""}`}
+            onClick={() => setSelectedCategory(category.id)}
           >
             <span>{category.name}</span>
           </div>

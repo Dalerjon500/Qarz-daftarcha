@@ -10,6 +10,8 @@ import useLoading from "./hooks/useLoading"
 import IsLoading from "./components/IsLoading"
 import NotFound from "./components/NotFound"
 import CartPage from "./pages/cart/CartPage"
+import ShopPage from "./pages/shop/ShopPage"
+import AdminProduct from "./pages/admin/products/AdminProduct"
 
 function App() {
   const { loading } = useLoading();
@@ -23,6 +25,7 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/shop" element={<ShopPage />} />
           <Route path="/cart" element={<CartPage />} />
         </Route>
 
@@ -39,7 +42,7 @@ function App() {
               </ProtectedRoute>
             }
           >
-
+            <Route path="/admin/products" element={<AdminProduct />} />
           </Route>
           <Route path="*" element={<NotFound />} />
       </Routes>

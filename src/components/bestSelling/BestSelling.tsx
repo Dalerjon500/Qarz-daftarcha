@@ -1,4 +1,3 @@
-import { useState } from "react";
 import FilterCategories from "../product/FilterCategories"
 import useProducts from "../../hooks/useProducts";
 import { Rating } from "@mui/material";
@@ -6,8 +5,7 @@ import useContextPro from "../../hooks/useContextPro";
 import type { Product } from "../../types/types";
 
 function BestSelling() {
-    const [currentFilter, setCurrentFilter] = useState<string>("");
-    const { productQuery } = useProducts(currentFilter);
+    const { products } = useProducts();
     const { state:{cart}, dispatch } = useContextPro();
 
     function handleCartToggle(product: Product) {
@@ -24,12 +22,12 @@ function BestSelling() {
     <div className="best-selling">
         <div className="best-selling-container">
             <div className="best-selling-right text-center">
-               <div className="best-selling-title">
-                    <h1 >- Best Selling -</h1>
-                    <FilterCategories currentFilter={currentFilter} setCurrentFilter={setCurrentFilter} />
+               <div className="selling-products-title">
+                    <h1>Best Selling</h1>
                </div>
+                <FilterCategories />
                 <div className="best-selling-products">
-                    {productQuery.data?.map((product) => (
+                    {products.map((product) => (
                         <div key={product.id} className="best-selling-product-card">
                             <div className="best-selling-product-image">
                                 <img src={product.imageUrl} alt={product.name} />
