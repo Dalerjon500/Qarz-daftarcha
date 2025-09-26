@@ -5,13 +5,11 @@ import { GiKnifeFork } from "react-icons/gi";
 import { useState } from "react";
 
 function ChefPage() {
-    const { orders } = useOrders();
+    const { orders , getOrdersByStatus} = useOrders();
     const [filterStatus, setFilterStatus] = useState("all");
 
-    const filteredOrders = filterStatus === "all" 
-        ? orders 
-        : orders.filter(order => order.status === filterStatus);
-
+    const filteredOrders = filterStatus === "all" ? orders : getOrdersByStatus(filterStatus);
+    
     const getStatusBadgeClass = (status: string) => {
         switch(status.toLowerCase()) {
             case "pending": return "status-badge status-pending";

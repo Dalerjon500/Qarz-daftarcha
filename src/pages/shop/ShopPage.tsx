@@ -18,14 +18,14 @@ function ShopPage() {
         <div className="shop-page">
             <div className="shop-page-title">
                 <h1>Shop Page<FaShopify /></h1>
-                <p>Breakfast is the most important meal of the day</p>
+                <p>Welcome to our shop page! We have a wide selection of products to choose from.</p>
             </div>
             
             <div className="shop-page-container">
                 <div className={`shop-left-content`}>
                     <ul className="category-list-shop">
                         <li 
-                            className={`category-item-shop ${selectedCategory === null ? 'active' : ''}`}
+                            className={`category-item-shop ${selectedCategory === "" ? 'active' : ''}`}
                             onClick={() => setSelectedCategory("")}
                         >
                             <FaShopify />

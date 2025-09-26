@@ -1,13 +1,13 @@
-import { FaShoppingCart, FaTrash, FaArrowLeft, FaTag } from 'react-icons/fa';
+import { FaShoppingCart, FaTrash, FaArrowLeft,  FaTag } from 'react-icons/fa';
 import { IoBagCheckOutline } from 'react-icons/io5';
 import useContextPro from '../../hooks/useContextPro';
 import { useNavigate } from 'react-router-dom';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { getAuth } from 'firebase/auth';
 import type { Product } from '../../types/types';
-import useLoading from '../../hooks/useLoading';
-import IsLoading from '../../components/IsLoading';
 
 function CartPage() {
-    const { loading } = useLoading();
     const { state: { cart }, dispatch } = useContextPro();
     const toNumber = (value: unknown) => {
         const n = Number(value);
@@ -20,7 +20,7 @@ function CartPage() {
     const totalSavings = cart.reduce((total, item) => total + (toNumber(item.oldPrice) - toNumber(item.price)) * toNumber(item.quantity ?? 1), 0);
     const navigate = useNavigate();
 
-    const deleteProduct = (cart : Product) => {
+     const deleteProduct = (cart : Product) => {
         if(cart.quantity === 1) {
             dispatch({ type: 'REMOVE_FROM_CART', payload: cart.id });
         }else{
@@ -28,16 +28,49 @@ function CartPage() {
         }
     }
 
-    if (loading) {
-        return <IsLoading />;
-    }
+    const handleAddOrder = async () => {
+        if (cart.length === 0) return;
 
+        try {
+            const auth = getAuth();
+            const userId = auth.currentUser?.uid || '';
+            const orderRef = await addDoc(collection(db, 'orders'), {
+                userId,
+                totalPrice: totalPrice,
+                createdAt: new Date(),
+                status: 'pending',
+                paymentMethod: 'cash',
+                shippingAddress: '',
+                notes: '',
+                deliveryDate: ''
+            });
+            for (const item of cart) {
+                const priceNum = Number(item.price) || 0;
+                const qtyNum = Number(item.quantity ?? 1) || 0;
+                await addDoc(collection(db, 'orders', orderRef.id, 'orderProducts'), {
+                    productId: String(item.id ?? ""),
+                    name: String(item.name ?? ""),
+                    imageUrl: item.imageUrl ?? "",
+                    description: String(item.description ?? ""),
+                    weight: String(item.weight ?? ""),
+                    price: priceNum,
+                    quantity: qtyNum,
+                    totalPrice: priceNum * qtyNum,
+                    createdAt: new Date()
+                });
+            }
+            navigate('/');
+            dispatch({ type: 'CLEAR_CART' });
+        } catch (e) {
+            console.error('Failed to place order', e);
+        }
+    };
     return (
         <div className="cart-page">
             <div className="cart-container">
-                <div className="cart-page-title">
-                    <h1>
-                        <FaShoppingCart />
+                <div className='cart-page-title'>
+                    <h1 >
+                        <FaShoppingCart className="cart-title-icon" />
                         Shopping Cart
                     </h1>
                 </div>
@@ -84,7 +117,9 @@ function CartPage() {
                                                     className="quantity-add"
                                                     onClick={() => deleteProduct(item)}
                                                 >-</button>
-                                                <span className="quantity">{item.quantity ?? 1}</span>
+                                                <h2 className="quantity">
+                                                    {item.quantity}
+                                                </h2>
                                                 <button
                                                     className="quantity-add"
                                                     onClick={() => dispatch({ type: "INCREASE_QUANTITY", payload: item.id })}
@@ -119,8 +154,8 @@ function CartPage() {
                                     <span>Total Amount</span>
                                     <span>${totalPrice.toFixed(2)}</span>
                                 </div>
-                                <button className="checkout-btn">
-                                    Order
+                                <button className="checkout-btn" onClick={handleAddOrder}>
+                                    ORDER
                                 </button>
                             </div>
                         </div>

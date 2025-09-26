@@ -15,6 +15,7 @@ import AdminProduct from "./pages/admin/products/AdminProduct"
 import AdminCategories from "./pages/admin/categories/AdminCategories"
 import AdminCarousel from "./pages/admin/carousel/AdminCarousel"
 import ChefPage from "./pages/chef/ChefPage"
+import AdminUsers from "./pages/admin/users/AdminUsers"
 
 function App() {
   const { loading } = useLoading();
@@ -50,6 +51,7 @@ function App() {
             <Route path="/admin/categories" element={<AdminCategories />} />
             <Route path="/admin/carousel" element={<AdminCarousel />} />
             <Route path="/admin/orders" element={<ChefPage />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
           </Route>
           <Route path="*" element={<NotFound />} />
       </Routes>

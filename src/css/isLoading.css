@@ -99,7 +99,6 @@
   }
 }
 
-/* Responsive design */
 @media (max-width: 480px) {
   .icon-item {
     width: 40px;
@@ -118,7 +117,6 @@
 
 /* not found */
 .not-found-container {
-  min-height: 100vh;
   background: linear-gradient(135deg, #fff 0%, #f9f9f9 100%);
   display: flex;
   justify-content: center;
@@ -128,7 +126,7 @@
 }
 
 .not-found-content {
-  max-width: 600px;
+  max-width: 800px;
   width: 100%;
   text-align: center;
   padding: 40px;
