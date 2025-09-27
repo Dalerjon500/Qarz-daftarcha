@@ -16,6 +16,10 @@ import AdminCategories from "./pages/admin/categories/AdminCategories"
 import AdminCarousel from "./pages/admin/carousel/AdminCarousel"
 import ChefPage from "./pages/chef/ChefPage"
 import AdminUsers from "./pages/admin/users/AdminUsers"
+import CartStatus from "./components/cartStatus/CartStatus"
+import WaiterPage from "./pages/waiter/WaiterPage"
+import BlogPage from "./components/blog/BlogPage"
+
 
 function App() {
   const { loading } = useLoading();
@@ -32,6 +36,8 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/cart/order-status" element={<CartStatus />} />
         </Route>
 
         <Route element={<AuthLayout />}>
@@ -51,7 +57,28 @@ function App() {
             <Route path="/admin/categories" element={<AdminCategories />} />
             <Route path="/admin/carousel" element={<AdminCarousel />} />
             <Route path="/admin/orders" element={<ChefPage />} />
+            <Route path="/admin/waiter" element={<WaiterPage />} />
             <Route path="/admin/users" element={<AdminUsers />} />
+          </Route>
+
+          <Route
+            path="/chef"
+            element={
+              <ProtectedRoute role="CHEF">
+                <ChefPage />
+              </ProtectedRoute>
+            }
+          > 
+          </Route>
+
+          <Route
+            path="/waiter"
+            element={
+              <ProtectedRoute role="WAITER">
+                <WaiterPage />
+              </ProtectedRoute>
+            }
+          >
           </Route>
           <Route path="*" element={<NotFound />} />
       </Routes>

@@ -1,5 +1,13 @@
 import { db } from "../firebase"
-import { collection, getDocs, doc, getDoc, QueryDocumentSnapshot, type DocumentData } from "firebase/firestore"
+import { 
+  collection, 
+  doc, 
+  getDoc, 
+  onSnapshot, 
+  type QueryDocumentSnapshot, 
+  type DocumentData, 
+  getDocs
+} from "firebase/firestore"
 import { useState, useEffect, useCallback } from "react"
 import type { Order, OrderProduct, User } from "../types/types"
 
@@ -59,32 +67,43 @@ export const useOrders = () => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchOrders = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
+  const subscribeOrders = useCallback(() => {
+    setLoading(true)
+    setError(null)
 
-      const ordersSnap = await getDocs(collection(db, "orders"))
-      const allOrders = await Promise.all(ordersSnap.docs.map(doc => buildOrder(doc)))
+    const ordersRef = collection(db, "orders")
 
-      setOrders(allOrders)
-      console.log(`Jami ${allOrders.length} ta order topildi va arrayga joylandi`)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred")
-    } finally {
-      setLoading(false)
-    }
+    const unsubscribe = onSnapshot(
+      ordersRef,
+      async snapshot => {
+        try {
+          const allOrders = await Promise.all(snapshot.docs.map(doc => buildOrder(doc)))
+          setOrders(allOrders)
+          console.log(`Real-time: ${allOrders.length} ta order yangilandi`)
+          setLoading(false)
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "An error occurred")
+          setLoading(false)
+        }
+      },
+      err => {
+        console.error("Real-time listener error:", err)
+        setError(err.message)
+        setLoading(false)
+      }
+    )
+
+    return unsubscribe
   }, [])
 
   useEffect(() => {
-    fetchOrders()
-  }, [fetchOrders])
+    const unsub = subscribeOrders()
+    return () => unsub && unsub() 
+  }, [subscribeOrders])
 
   const getAllOrders = (): Order[] => orders
-
   const getOrdersByStatus = (status: string): Order[] =>
     orders.filter(order => order.status === status)
-
   const getOrdersByUser = (userId: string): Order[] =>
     orders.filter(order => order.userId === userId)
 
@@ -92,7 +111,7 @@ export const useOrders = () => {
     orders,
     loading,
     error,
-    refetch: fetchOrders,
+    refetch: subscribeOrders, 
     getAllOrders,
     getOrdersByStatus,
     getOrdersByUser,

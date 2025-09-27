@@ -79,13 +79,22 @@ function CartPage() {
                     <div className="empty-cart">
                         <div className="empty-cart-icon">🛒</div>
                         <p>Your cart is feeling lonely 😔</p>
-                        <button 
+                        <div className='orders-btn'>
+                            <button 
                             className="continue-shopping-btn"
                             onClick={ () => navigate('/') }
-                        >
-                            <FaArrowLeft className="btn-icon" />
-                            Continue Shopping
-                        </button>
+                            >
+                                <FaArrowLeft className="btn-icon" />
+                                Continue Shopping
+                            </button>
+                            <button 
+                                onClick={ () => navigate('/cart/order-status') } 
+                                className="order-status-btn"
+                            >
+                                <FaTag className="btn-icon" />
+                                My orders status
+                            </button>
+                        </div>
                     </div>
                 ) : (
                     <div className="cart-content">

@@ -30,15 +30,16 @@ function useUsers() {
     }
   };
 
-  const updateUserRole = async (userId: string, newRole: string) => {
+  const updateUserRole = async (userId: string, newRoles: string[]) => {
     try {
       const userDoc = doc(db, "users", userId);
-      await updateDoc(userDoc, { role: newRole });
-      toast.success("Role updated successfully!");
+      await updateDoc(userDoc, { roles: newRoles });
+      toast.success("Roles updated successfully!");
     } catch (error) {
       console.error("Error updating user role:", error);
     }
   }
+
   return { users, loading, updateUserRole };
 }
 

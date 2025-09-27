@@ -4,15 +4,16 @@ import userLogo from "../../assets/Profile.svg";
 import cartLogo from "../../assets/Buy.svg";
 import useContextPro from '../../hooks/useContextPro';
 import { Avatar, Box, Menu, MenuItem, Typography } from '@mui/material';
-import { FaChevronDown, FaSearch, FaSignOutAlt, FaUserAlt, FaUserShield, FaUserTie } from 'react-icons/fa';
+import { FaChevronDown, FaSearch, FaSignOutAlt, FaUserAlt, FaUserShield } from 'react-icons/fa';
 import { useState } from 'react';
 import { IoIosMenu } from 'react-icons/io';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../firebase';
-import { LuChefHat } from 'react-icons/lu';
 
 function Header() {
     const { state:{ user, cart}, dispatch } = useContextPro();
+    console.log(user);
+    
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -180,58 +181,6 @@ function Header() {
                         >
                           <FaUserShield style={{ color: '#0288d1', fontSize: '16px' }} />
                           <span>Admin</span>
-                        </Link>
-                      </MenuItem>
-                    )}
-                    {user?.roles?.includes("CHEF") && (
-                      <MenuItem
-                        onClick={handleMenuClose} 
-                        sx={{ 
-                          py: 1.5,
-                          '&:hover': {
-                            backgroundColor: 'rgba(2, 136, 209, 0.08)'
-                          }
-                        }}
-                      >
-                        <Link
-                          to="/admin" 
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
-                            textDecoration: 'none',
-                            color: 'inherit',
-                            width: '100%'
-                          }}
-                        >
-                          <LuChefHat style={{ color: '#0288d1', fontSize: '16px' }} />
-                          <span>Chef</span>
-                        </Link>
-                      </MenuItem>
-                    )}
-                    {user?.roles?.includes("WAITER") && (
-                      <MenuItem
-                        onClick={handleMenuClose} 
-                        sx={{ 
-                          py: 1.5,
-                          '&:hover': {
-                            backgroundColor: 'rgba(2, 136, 209, 0.08)'
-                          }
-                        }}
-                      >
-                        <Link
-                          to="/admin" 
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '12px',
-                            textDecoration: 'none',
-                            color: 'inherit',
-                            width: '100%'
-                          }}
-                        >
-                          <FaUserTie style={{ color: '#0288d1', fontSize: '16px' }} />
-                          <span>Waiter</span>
                         </Link>
                       </MenuItem>
                     )}

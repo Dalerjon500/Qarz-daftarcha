@@ -4,7 +4,8 @@ export interface User {
   email: string;
   password: string;
   confirmPassword: string;
-  roles: string[]
+  roles: string[],
+  uid: string;
 }
 
 

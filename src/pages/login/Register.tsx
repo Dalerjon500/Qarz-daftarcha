@@ -1,9 +1,7 @@
-import { FaArrowRight, FaEnvelope, FaLock, FaUser } from "react-icons/fa"
-import { FiShoppingBag } from "react-icons/fi"
+import { FaArrowRight, FaEnvelope, FaLock, FaUser, FaUtensils } from "react-icons/fa"
 import { type SubmitHandler, useForm } from "react-hook-form"
 import { toast } from "react-toastify"
-import { useNavigate } from "react-router-dom"
-import { Link } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
 import { auth, db } from "../../firebase"
 import { doc, setDoc } from "firebase/firestore"
@@ -33,6 +31,7 @@ function Register() {
                 uid: user.uid,
                 name,
                 email,
+                roles : ["USER"],
                 createdAt: new Date(),
             });
 
@@ -51,124 +50,184 @@ function Register() {
             }
         }
     };
+    
     return (
         <div className="signup d-flex justify-content-center align-items-center min-vh-100" style={{ 
-            backgroundColor: '#fff8f0',
-            backgroundImage: 'linear-gradient(rgba(255,165,0,0.05), rgba(255,165,0,0.05))'
+            backgroundColor: '#fef7f9',
+            backgroundImage: 'linear-gradient(135deg, rgba(226, 26, 67, 0.03) 0%, rgba(255, 255, 255, 0.9) 100%)',
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            <div className="signup-form bg-white p-3 p-md-5 rounded-4 shadow" style={{ 
+            {/* Background decorative elements */}
+            <div style={{
+                position: 'absolute',
+                top: '-10%',
+                left: '-10%',
+                width: '30%',
+                height: '50%',
+                backgroundColor: 'rgba(226, 26, 67, 0.05)',
+                borderRadius: '50%',
+                filter: 'blur(40px)'
+            }}></div>
+            <div style={{
+                position: 'absolute',
+                bottom: '-10%',
+                right: '-5%',
+                width: '40%',
+                height: '40%',
+                backgroundColor: 'rgba(226, 26, 67, 0.05)',
+                borderRadius: '50%',
+                filter: 'blur(40px)'
+            }}></div>
+            
+            <div className="signup-form bg-white p-4 p-md-5 rounded-4 shadow" style={{ 
                 width: '95%', 
-                maxWidth: '500px', 
+                maxWidth: '500px',
                 border: 'none',
                 position: 'relative',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                zIndex: 1,
+                boxShadow: '0 10px 30px rgba(226, 26, 67, 0.1) !important'
             }}>
                 {/* Decorative elements */}
                 <div style={{
                     position: 'absolute',
-                    top: '-50px',
-                    right: '-50px',
-                    width: '150px',
-                    height: '150px',
-                    backgroundColor: 'rgba(255, 165, 0, 0.1)',
+                    top: '-30px',
+                    right: '-30px',
+                    width: '120px',
+                    height: '120px',
+                    backgroundColor: 'rgba(226, 26, 67, 0.08)',
                     borderRadius: '50%',
                     zIndex: 0
                 }}></div>
                 <div style={{
                     position: 'absolute',
-                    bottom: '-30px',
-                    left: '-30px',
-                    width: '100px',
-                    height: '100px',
-                    backgroundColor: 'rgba(255, 165, 0, 0.1)',
+                    bottom: '-20px',
+                    left: '-20px',
+                    width: '80px',
+                    height: '80px',
+                    backgroundColor: 'rgba(226, 26, 67, 0.06)',
                     borderRadius: '50%',
                     zIndex: 0
                 }}></div>
                 
                 <div className="text-center mb-4" style={{ position: 'relative', zIndex: 1 }}>
-                    <FiShoppingBag className="mb-3" style={{ 
-                        fontSize: '2.5rem', 
-                        color: '#ff8c00',
-                        filter: 'drop-shadow(0 2px 4px rgba(255,140,0,0.3))'
-                    }} />
-                    <h2 className="fw-bold" style={{ color: '#ff8c00' }}>Join YouMeal</h2>
-                    <p className="text-muted">Create your account to start ordering</p>
+                    <div className="mb-3" style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '70px',
+                        height: '70px',
+                        backgroundColor: 'rgba(226, 26, 67, 0.1)',
+                        borderRadius: '50%',
+                        marginBottom: '1rem'
+                    }}>
+                        <FaUtensils style={{ 
+                            fontSize: '2rem', 
+                            color: '#E21A43'
+                        }} />
+                    </div>
+                    <h2 className="fw-bold mb-2" style={{ 
+                        color: '#E21A43',
+                        fontSize: '2rem',
+                        background: 'linear-gradient(135deg, #E21A43 0%, #FF6B9D 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                    }}>Join Perfect Breakfast</h2>
+                    <p className="text-muted" style={{ fontSize: '1rem' }}>Create your account to start ordering</p>
                 </div>
                 
                 <form onSubmit={handleSubmit(onSubmit)} style={{ position: 'relative', zIndex: 1 }}>
-                    <div className="mb-3">
-                        <label htmlFor="name" className="form-label fw-semibold">Full Name</label>
-                        <div className="input-group">
+                    <div className="mb-4">
+                        <label htmlFor="name" className="form-label fw-semibold" style={{ color: '#333' }}>Full Name</label>
+                        <div className="input-group input-group-lg">
                             <span className="input-group-text bg-white" style={{ 
                                 borderRight: 'none',
-                                borderColor: '#ff8c00'
+                                borderColor: 'rgba(226, 26, 67, 0.3)',
+                                borderTopLeftRadius: '12px',
+                                borderBottomLeftRadius: '12px'
                             }}>
-                                <FaUser style={{ color: '#ff8c00' }} />
+                                <FaUser style={{ color: '#E21A43' }} />
                             </span>
                             <input 
                                 {...register("name", { required: true })} 
                                 type="text" 
                                 className="form-control" 
                                 id="username"
-                                placeholder="John Doe"
                                 style={{
                                     borderLeft: 'none',
-                                    borderColor: '#ff8c00',
-                                    boxShadow: 'none'
+                                    borderColor: 'rgba(226, 26, 67, 0.3)',
+                                    boxShadow: 'none',
+                                    borderTopRightRadius: '12px',
+                                    borderBottomRightRadius: '12px',
+                                    padding: '0.75rem 1rem',
+                                    fontSize: '1rem'
                                 }}
                             />
                         </div>
-                        {errors.name && <p className="text-danger mt-1">Name is required</p>}
+                        {errors.name && <p className="text-danger mt-2 small">Name is required</p>}
                     </div>
                     
-                    <div className="mb-3">
-                        <label htmlFor="email" className="form-label fw-semibold">Email Address</label>
-                        <div className="input-group">
+                    <div className="mb-4">
+                        <label htmlFor="email" className="form-label fw-semibold" style={{ color: '#333' }}>Email Address</label>
+                        <div className="input-group input-group-lg">
                             <span className="input-group-text bg-white" style={{ 
                                 borderRight: 'none',
-                                borderColor: '#ff8c00'
+                                borderColor: 'rgba(226, 26, 67, 0.3)',
+                                borderTopLeftRadius: '12px',
+                                borderBottomLeftRadius: '12px'
                             }}>
-                                <FaEnvelope style={{ color: '#ff8c00' }} />
+                                <FaEnvelope style={{ color: '#E21A43' }} />
                             </span>
                             <input 
                                 {...register("email", { required: true })} 
                                 type="email" 
                                 className="form-control" 
-                                id="email" 
-                                placeholder="john@example.com"
+                                id="email"
                                 style={{
                                     borderLeft: 'none',
-                                    borderColor: '#ff8c00',
-                                    boxShadow: 'none'
+                                    borderColor: 'rgba(226, 26, 67, 0.3)',
+                                    boxShadow: 'none',
+                                    borderTopRightRadius: '12px',
+                                    borderBottomRightRadius: '12px',
+                                    padding: '0.75rem 1rem',
+                                    fontSize: '1rem'
                                 }}
                             />
                         </div>
-                        {errors.email && <p className="text-danger mt-1">Email is required</p>}
+                        {errors.email && <p className="text-danger mt-2 small">Email is required</p>}
                     </div>
-                    <div className="mb-3">
-                        <label htmlFor="password" className="form-label fw-semibold">Password</label>
-                        <div className="input-group">
+                    
+                    <div className="mb-4">
+                        <label htmlFor="password" className="form-label fw-semibold" style={{ color: '#333' }}>Password</label>
+                        <div className="input-group input-group-lg">
                             <span className="input-group-text bg-white" style={{ 
                                 borderRight: 'none',
-                                borderColor: '#ff8c00'
+                                borderColor: 'rgba(226, 26, 67, 0.3)',
+                                borderTopLeftRadius: '12px',
+                                borderBottomLeftRadius: '12px'
                             }}>
-                                <FaLock style={{ color: '#ff8c00' }} />
+                                <FaLock style={{ color: '#E21A43' }} />
                             </span>
                             <input 
                                 {...register("password", { required: true, minLength: 8 })}
                                 type="password" 
                                 className="form-control" 
-                                id="password" 
-                                placeholder="At least 8 characters"
+                                id="password"
                                 style={{
                                     borderLeft: 'none',
-                                    borderColor: '#ff8c00',
-                                    boxShadow: 'none'
+                                    borderColor: 'rgba(226, 26, 67, 0.3)',
+                                    boxShadow: 'none',
+                                    borderTopRightRadius: '12px',
+                                    borderBottomRightRadius: '12px',
+                                    padding: '0.75rem 1rem',
+                                    fontSize: '1rem'
                                 }}
                             />
                         </div>
                         {errors.password && (
-                            <p className="text-danger mt-1">
+                            <p className="text-danger mt-2 small">
                                 {errors.password.type === 'required' 
                                     ? 'Password is required' 
                                     : 'Password must be at least 8 characters'}
@@ -177,81 +236,83 @@ function Register() {
                     </div>
                     
                     <div className="mb-4">
-                        <label htmlFor="confirm-password" className="form-label fw-semibold">Confirm Password</label>
-                        <div className="input-group">
+                        <label htmlFor="confirm-password" className="form-label fw-semibold" style={{ color: '#333' }}>Confirm Password</label>
+                        <div className="input-group input-group-lg">
                             <span className="input-group-text bg-white" style={{ 
                                 borderRight: 'none',
-                                borderColor: '#ff8c00'
+                                borderColor: 'rgba(226, 26, 67, 0.3)',
+                                borderTopLeftRadius: '12px',
+                                borderBottomLeftRadius: '12px'
                             }}>
-                                <FaLock style={{ color: '#ff8c00' }} />
+                                <FaLock style={{ color: '#E21A43' }} />
                             </span>
                             <input 
                                 {...register("confirmPassword", { required: true })}
                                 type="password" 
                                 className="form-control" 
-                                id="confirm-password" 
-                                placeholder="Re-enter your password"
+                                id="confirm-password"
                                 style={{
                                     borderLeft: 'none',
-                                    borderColor: '#ff8c00',
-                                    boxShadow: 'none'
+                                    borderColor: 'rgba(226, 26, 67, 0.3)',
+                                    boxShadow: 'none',
+                                    borderTopRightRadius: '12px',
+                                    borderBottomRightRadius: '12px',
+                                    padding: '0.75rem 1rem',
+                                    fontSize: '1rem'
                                 }}
                             />
                         </div>
-                        {errors.confirmPassword && <p className="text-danger mt-1">Please confirm your password</p>}
+                        {errors.confirmPassword && <p className="text-danger mt-2 small">Please confirm your password</p>}
                     </div>         
                     
                     <button 
                         type="submit" 
                         className="btn w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2" 
                         style={{ 
-                            backgroundColor: '#ff8c00', 
+                            background: 'linear-gradient(135deg, #E21A43 0%, #FF6B9D 100%)',
                             color: 'white',
-                            borderRadius: '50px',
+                            borderRadius: '12px',
                             border: 'none',
-                            boxShadow: '0 4px 15px rgba(255, 140, 0, 0.3)',
-                            transition: 'all 0.3s ease',
+                            boxShadow: '0 4px 15px rgba(226, 26, 67, 0.3)',
+                            transition: 'all 0.4s ease',
                             fontSize: '1.1rem',
                             position: 'relative',
                             overflow: 'hidden',
                             zIndex: 1
                         }}
                         onMouseOver={(e) => {
-                            e.currentTarget.style.backgroundColor = '#ff6b00';
                             e.currentTarget.style.transform = 'translateY(-2px)';
-                            e.currentTarget.style.boxShadow = '0 6px 20px rgba(255, 140, 0, 0.4)';
+                            e.currentTarget.style.boxShadow = '0 6px 20px rgba(226, 26, 67, 0.4)';
                         }}
                         onMouseOut={(e) => {
-                            e.currentTarget.style.backgroundColor = '#ff8c00';
                             e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.boxShadow = '0 4px 15px rgba(255, 140, 0, 0.3)';
+                            e.currentTarget.style.boxShadow = '0 4px 15px rgba(226, 26, 67, 0.3)';
                         }}
                     >
                         <span style={{ position: 'relative', zIndex: 2 }}>Sign Up Now</span>
                         <FaArrowRight style={{ position: 'relative', zIndex: 2 }} />
-                        <span style={{
+                        <div style={{
                             position: 'absolute',
-                            top: '-10px',
-                            right: '-10px',
-                            width: '40px',
-                            height: '40px',
-                            backgroundColor: 'rgba(255,255,255,0.2)',
-                            borderRadius: '50%',
+                            top: 0,
+                            left: '-100%',
+                            width: '100%',
+                            height: '100%',
+                            background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                            transition: 'left 0.7s',
                             zIndex: 0
-                        }}></span>
+                        }} className="btn-shine"></div>
                     </button>
                     
-                    <div className="text-center mt-4">
+                    <div className="text-center mt-4 pt-3" style={{ borderTop: '1px solid rgba(226, 26, 67, 0.1)' }}>
                         <p className="text-muted small mb-0">
-                            Already have an account? 
+                            Already have an account?{' '}
                             <Link 
                                 to="/login" 
                                 style={{ 
-                                    color: '#ff8c00', 
-                                    cursor: 'pointer',
-                                    marginLeft: '5px',
+                                    color: '#E21A43', 
                                     fontWeight: '600',
-                                    textDecoration: 'none'
+                                    textDecoration: 'none',
+                                    transition: 'all 0.3s ease'
                                 }}
                                 className="hover-underline"
                             >

@@ -76,7 +76,7 @@
         0 20px 40px rgba(226, 26, 67, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(226, 26, 67, 0.1);
-    max-width: 500px;
+    max-width: 700px;
     margin: 0 auto;
     position: relative;
     overflow: hidden;
@@ -116,7 +116,13 @@
     font-weight: 500;
 }
 
-.continue-shopping-btn {
+.orders-btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.continue-shopping-btn, .order-status-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.8rem;
@@ -136,7 +142,7 @@
     overflow: hidden;
 }
 
-.continue-shopping-btn::before {
+.continue-shopping-btn::before , .order-status-btn::before {
     content: '';
     position: absolute;
     top: 0;
@@ -147,14 +153,14 @@
     transition: left 0.5s;
 }
 
-.continue-shopping-btn:hover {
+.continue-shopping-btn:hover, .order-status-btn:hover {
     transform: translateY(-3px) scale(1.05);
     box-shadow: 
         0 10px 30px rgba(226, 26, 67, 0.6),
         inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-.continue-shopping-btn:hover::before {
+.continue-shopping-btn:hover::before, .order-status-btn:hover::before {
     left: 100%;
 }
 

@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom"
 import { House, People, FileText, Gear, BoxArrowRight, List } from "react-bootstrap-icons"
 import useContextPro from "../../hooks/useContextPro"
 import { FaBox, FaHeart } from "react-icons/fa"
+import { SiWine } from "react-icons/si"
 
 function AdminSidebar() {
     const [isOpen, setIsOpen] = useState(true)
@@ -20,6 +21,7 @@ function AdminSidebar() {
         { name: "Carousel/Slider", icon: <FaHeart />, path: "/admin/carousel", role: "ADMIN" },
         { name: "Users", icon: <People />, path: "/admin/users", role: "ADMIN" },
         { name: "Orders", icon: <FaBox />, path: "/admin/orders", role: "CHEF" },
+        { name: "Waiter", icon: <SiWine />, path: "/admin/waiter", role: "WAITER" },
     ]
 
     const canAccess = (itemRole: string) => {
@@ -47,10 +49,7 @@ function AdminSidebar() {
             <div className="sidebar-header d-flex justify-content-between align-items-center p-3">
                 {isOpen && (
                     <h4 onClick={() => navigate("/home")} className="m-0">
-                        {user?.roles.includes("ADMIN") ? "Admin Panel" 
-                        : user?.roles.includes("CHEF") ? "Chef Panel"
-                        : "Waiter Panel"
-                        }
+                        Admin Panel
                     </h4>
                 )}
                 <button

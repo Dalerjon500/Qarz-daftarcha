@@ -1,17 +1,14 @@
 import { useOrders } from "../../hooks/useOrders";
-import { LuChefHat } from "react-icons/lu";
 import { FaMapMarkerAlt, FaMoneyBillWave, FaUser } from "react-icons/fa";
 import { GiKnifeFork } from "react-icons/gi";
 import { useState } from "react";
 import useContextPro from "../../hooks/useContextPro";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase";
+import { SiWine } from "react-icons/si";
 
-function ChefPage() {
-    const { state: { user } } = useContextPro();
+function WaiterPage() {
+    const {state: { user }} = useContextPro();
     const { orders , getOrdersByStatus} = useOrders();
     const [filterStatus, setFilterStatus] = useState("all");
-    const [submittingId, setSubmittingId] = useState<string | null>(null);
 
     const filteredOrders = filterStatus === "all" ? orders : getOrdersByStatus(filterStatus);
     
@@ -22,28 +19,16 @@ function ChefPage() {
             default: return "status-badge";
         }
     };
-
-   const updateStatus = async (orderId: string, newStatus: string) => {
-        try {
-            setSubmittingId(orderId); 
-            const orderRef = doc(db, "orders", orderId);
-            await updateDoc(orderRef, { status: newStatus });
-        } catch (error) {
-            console.error("Error updating order status:", error);
-        } finally {
-            setSubmittingId(null); 
-        }
-    };
     return (
         <div className="chef-page">
             <div className="chef-page-header">
                 <div className="chef-page-title">
                     <div className="title-container">
-                        <LuChefHat className="chef-icon" />
+                        <SiWine className="chef-icon" />
                         <div>
-                            <h1>Chef's Kitchen</h1>
+                            <h1>Waiter Dashboard</h1>
                             <p>Manage your orders efficiently</p>
-                            <p className="panel-user-info"> Logged in as: {user?.name}</p>
+                            <p className="panel-user-info">Logged in as: {user?.name}</p>
                         </div>
                     </div>
                     <div className="orders-count">
@@ -142,20 +127,6 @@ function ChefPage() {
                                             ))}
                                         </div>
                                     </div>
-
-                                    <div className="order-actions">
-                                        <button
-                                            onClick={() => updateStatus(order.id, "completed")}
-                                            className="action-btn update-btn"
-                                            disabled={order.status === "completed" || submittingId === order.id}
-                                            >
-                                            {submittingId === order.id
-                                                ? "Updating..." 
-                                                : order.status === "completed" 
-                                                ? "" 
-                                                : "Done Cooking"}
-                                        </button>
-                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -166,4 +137,4 @@ function ChefPage() {
     );
 }
 
-export default ChefPage;
+export default WaiterPage;

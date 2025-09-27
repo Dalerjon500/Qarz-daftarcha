@@ -17,6 +17,9 @@
 @import "./pages/admin/carousel/adminCarousel.css";
 @import "./pages//chef/chefPage.css";
 @import "./pages/admin/users/adminUsers.css";
+@import "./components/cartStatus/cartStatus.css";
+
+@import "./components/blog/blogPage.css";
 @import "tailwindcss";
 
 
