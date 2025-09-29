@@ -26,7 +26,7 @@ function useProducts() {
     try {
       const queryIf =
         selectedCategory === ""
-          ? orderBy("createdAt", "asc")
+          ? orderBy("createdAt", "desc")
           : where("categoryId", "==", selectedCategory);
 
       const q = query(collection(db, "products"), queryIf);

@@ -5,7 +5,7 @@ import { GiKnifeFork } from "react-icons/gi";
 import useContextPro from "../../hooks/useContextPro";
 
 function CartStatus() {
-  const { orders, getOrdersByStatus } = useOrders();
+  const { orders, getOrdersByStatus, loading } = useOrders();
   const {state: { user } } = useContextPro();
   const [filterStatus, setFilterStatus] = useState("all");
 
@@ -31,6 +31,16 @@ function CartStatus() {
     }
   };
 
+  if (loading) {
+        return (
+        <div className="admin-carousel">
+            <div className="loading-state">
+            <div className="dash-loading-spinner"></div>
+            <p>Loading...</p>
+            </div>
+        </div>
+        );
+  }
   return (
     <div className="cart-page">
       <div className="cart-page-container">

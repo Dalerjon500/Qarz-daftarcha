@@ -6,7 +6,7 @@ import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "perfect-breakfast-645dc.firebaseapp.com",
   projectId: "perfect-breakfast-645dc",
   storageBucket: "perfect-breakfast-645dc.firebasestorage.app",
@@ -15,7 +15,7 @@ const firebaseConfig = {
   measurementId: "G-DN7EX7DZSQ"
 };
 
-// Initialize Firebase
+
 const app = initializeApp(firebaseConfig);
 export const storage = getStorage(app);
 export const db = getFirestore(app);

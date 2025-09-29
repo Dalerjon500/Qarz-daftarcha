@@ -1,66 +1,8 @@
-import { db } from "../firebase"
-import { 
-  collection, 
-  doc, 
-  getDoc, 
-  onSnapshot, 
-  type QueryDocumentSnapshot, 
-  type DocumentData, 
-  getDocs
-} from "firebase/firestore"
 import { useState, useEffect, useCallback } from "react"
+import { db } from "../firebase"
+import {collection,doc,getDoc,getDocs,onSnapshot,type QueryDocumentSnapshot,
+  type DocumentData,} from "firebase/firestore"
 import type { Order, OrderProduct, User } from "../types/types"
-
-async function fetchUser(userId: string): Promise<User | null> {
-  try {
-    const userSnap = await getDoc(doc(db, "users", userId))
-    return userSnap.exists()
-      ? ({ id: userSnap.id, ...userSnap.data() } as User)
-      : null
-  } catch (error) {
-    console.warn(`User ${userId} not found:`, error)
-    return null
-  }
-}
-
-async function fetchOrderProducts(orderId: string): Promise<OrderProduct[]> {
-  try {
-    const productsSnap = await getDocs(collection(db, "orders", orderId, "orderProducts"))
-    return productsSnap.docs.map(p => ({
-      id: p.id,
-      ...p.data(),
-    })) as OrderProduct[]
-  } catch (error) {
-    console.warn(`Products for order ${orderId} not found:`, error)
-    return []
-  }
-}
-
-async function buildOrder(
-  orderDoc: QueryDocumentSnapshot<DocumentData>
-): Promise<Order> {
-  const orderData = orderDoc.data()
-  const orderId = orderDoc.id
-
-  const [user, products] = await Promise.all([
-    orderData.userId ? fetchUser(orderData.userId) : Promise.resolve(null),
-    fetchOrderProducts(orderId),
-  ])
-
-  return {
-    id: orderId,
-    userId: orderData.userId,
-    user: user as User,
-    totalPrice: orderData.totalPrice || 0,
-    products,
-    createdAt: orderData.createdAt,
-    status: orderData.status || "unknown",
-    paymentMethod: orderData.paymentMethod || "unknown",
-    shippingAddress: orderData.shippingAddress || "unknown",
-    notes: orderData.notes || "unknown",
-    deliveryDate: orderData.deliveryDate || "unknown",
-  }
-}
 
 export const useOrders = () => {
   const [orders, setOrders] = useState<Order[]>([])
@@ -77,7 +19,54 @@ export const useOrders = () => {
       ordersRef,
       async snapshot => {
         try {
-          const allOrders = await Promise.all(snapshot.docs.map(doc => buildOrder(doc)))
+          const allOrders = await Promise.all(
+            snapshot.docs.map(async (orderDoc: QueryDocumentSnapshot<DocumentData>) => {
+              const orderData = orderDoc.data()
+              const orderId = orderDoc.id
+
+              // user fetch
+              let user: User | null = null
+              if (orderData.userId) {
+                try {
+                  const userSnap = await getDoc(doc(db, "users", orderData.userId))
+                  if (userSnap.exists()) {
+                    user = { id: userSnap.id, ...userSnap.data() } as User
+                  }
+                } catch (err) {
+                  console.warn(`User ${orderData.userId} not found:`, err)
+                }
+              }
+
+              // products fetch
+              let products: OrderProduct[] = []
+              try {
+                const productsSnap = await getDocs(
+                  collection(db, "orders", orderId, "orderProducts")
+                )
+                products = productsSnap.docs.map(p => ({
+                  id: p.id,
+                  ...p.data(),
+                })) as OrderProduct[]
+              } catch (err) {
+                console.warn(`Products for order ${orderId} not found:`, err)
+              }
+
+              return {
+                id: orderId,
+                userId: orderData.userId,
+                user,
+                totalPrice: orderData.totalPrice || 0,
+                products,
+                createdAt: orderData.createdAt,
+                status: orderData.status || "unknown",
+                paymentMethod: orderData.paymentMethod || "unknown",
+                shippingAddress: orderData.shippingAddress || "unknown",
+                notes: orderData.notes || "unknown",
+                deliveryDate: orderData.deliveryDate || "unknown",
+              } as Order
+            })
+          )
+
           setOrders(allOrders)
           console.log(`Real-time: ${allOrders.length} ta order yangilandi`)
           setLoading(false)
@@ -98,8 +87,9 @@ export const useOrders = () => {
 
   useEffect(() => {
     const unsub = subscribeOrders()
-    return () => unsub && unsub() 
+    return () => unsub && unsub()
   }, [subscribeOrders])
+
 
   const getAllOrders = (): Order[] => orders
   const getOrdersByStatus = (status: string): Order[] =>
@@ -111,7 +101,7 @@ export const useOrders = () => {
     orders,
     loading,
     error,
-    refetch: subscribeOrders, 
+    refetch: subscribeOrders,
     getAllOrders,
     getOrdersByStatus,
     getOrdersByUser,

@@ -15,7 +15,7 @@ function AdminSidebar() {
     } = useContextPro()
 
     const menuItems = [
-        { name: "Dashboard", icon: <House />, path: "/admin", role: "ADMIN" },
+        { name: "Dashboard", icon: <House />, path: "/admin/dashboard", role: "ADMIN" },
         { name: "Products", icon: <FileText />, path: "/admin/products", role: "ADMIN" },
         { name: "Categories", icon: <Gear />, path: "/admin/categories", role: "ADMIN" },
         { name: "Carousel/Slider", icon: <FaHeart />, path: "/admin/carousel", role: "ADMIN" },

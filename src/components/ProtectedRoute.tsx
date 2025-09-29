@@ -12,6 +12,7 @@ function ProtectedRoute({ role, children }: Props) {
   if (!isLoading && !user?.roles.includes(role)) {
     return <Navigate to="/" replace />;
   }
+
   return (
     children
   )

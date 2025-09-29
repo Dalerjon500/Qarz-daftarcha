@@ -8,8 +8,6 @@ type Props = {
 function FilterCategories({selectedCategory, setSelectedCategory}: Props) {
   const {categories} = useCategories();
 
-  console.log("selectedCategory", selectedCategory)
-
   return (
     <div className="filter-categories">
       <div className="categories-list">

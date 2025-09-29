@@ -23,7 +23,6 @@
     z-index: 1;
 }
 
-/* Header Section */
 .chef-page-header {
     margin-bottom: 2rem;
 }
@@ -82,7 +81,6 @@
     opacity: 0.9;
 }
 
-/* Status Filter */
 .status-filter {
     display: flex;
     gap: 1rem;
@@ -161,7 +159,7 @@
 }
 .orders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
     align-items: flex-start;
     gap: 1.5rem;
 }
@@ -311,6 +309,27 @@
 
 .product-info {
     flex-grow: 1;
+}
+
+.chef-info-panel{
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.logout-button{
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    background: #E21A43;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #f7f6f6;
+    border: 1px solid rgba(226, 26, 67, 0.1);
 }
 
 .product-header {

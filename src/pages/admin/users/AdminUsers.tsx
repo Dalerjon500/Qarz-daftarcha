@@ -3,7 +3,7 @@ import { FaSave, FaUser, FaTimes, FaUserShield, FaUtensils, FaConciergeBell } fr
 import useUsers from "../../../hooks/useUsers";
 
 function AdminUsers() {
-  const { users, updateUserRole } = useUsers();
+  const { users, updateUserRole, loading } = useUsers();
   const [selectedRoles, setSelectedRoles] = useState<{ [key: string]: string[] }>({});
   const [isSaving, setIsSaving] = useState<{ [key: string]: boolean }>({});
 
@@ -40,6 +40,17 @@ function AdminUsers() {
     );
   };
 
+  if (loading) {
+    return (
+      <div className="admin-carousel">
+        <div className="loading-state">
+          <div className="dash-loading-spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+  
   return (
     <div className="container py-4">
       <div className="mb-4 text-center">
@@ -127,6 +138,7 @@ function AdminUsers() {
                             )}
                           </button>
                           <button 
+                          
                             className="btn btn-soft-danger btn-sm d-flex align-items-center gap-1 px-3 py-2"
                             style={{ borderRadius: '6px', transition: 'all 0.3s' }}
                           >

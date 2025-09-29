@@ -13,8 +13,7 @@ function AdminCategories() {
     reset,
     setValue,
   } = useForm();
-  const { categories, addCategory, updateCategory, deleteCategory } =
-    useCategories();
+  const { categories, loading, addCategory, updateCategory, deleteCategory } =useCategories();
 
   const [isOpen, setIsOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -65,6 +64,17 @@ function AdminCategories() {
     setEditingCategory(null);
     reset();
   };
+
+  if (loading) {
+    return (
+      <div className="admin-carousel">
+        <div className="loading-state">
+          <div className="dash-loading-spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-categories">

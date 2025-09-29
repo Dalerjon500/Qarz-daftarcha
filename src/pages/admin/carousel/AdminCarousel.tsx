@@ -7,7 +7,7 @@ import useCarousel from "../../../hooks/useCarousel"
 
 function AdminCarousel() {
   const {register, handleSubmit, formState: {errors}, reset, setValue} = useForm()
-  const {carousel,addCarousel, updateCarousel, deleteCarousel} = useCarousel()
+  const {carousel, loading, addCarousel, updateCarousel, deleteCarousel} = useCarousel()
   const [isOpen, setIsOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editingCarousel, setEditingCarousel] = useState<CarouselItem | null>(null);
@@ -69,16 +69,16 @@ function AdminCarousel() {
     reset();
   }
 
-//   if (loading) {
-//     return (
-//       <div className="admin-carousel">
-//         <div className="loading-state">
-//           <div className="loading-spinner"></div>
-//           <p>Loading carousel items...</p>
-//         </div>
-//       </div>
-//     );
-//   }
+  if (loading) {
+    return (
+      <div className="admin-carousel">
+        <div className="loading-state">
+          <div className="dash-loading-spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-carousel">

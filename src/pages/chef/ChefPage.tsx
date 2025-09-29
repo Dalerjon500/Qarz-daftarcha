@@ -8,8 +8,8 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 
 function ChefPage() {
-    const { state: { user } } = useContextPro();
-    const { orders , getOrdersByStatus} = useOrders();
+    const { state: { user }, dispatch } = useContextPro();
+    const { orders, loading , getOrdersByStatus} = useOrders();
     const [filterStatus, setFilterStatus] = useState("all");
     const [submittingId, setSubmittingId] = useState<string | null>(null);
 
@@ -34,6 +34,17 @@ function ChefPage() {
             setSubmittingId(null); 
         }
     };
+
+    if (loading) {
+        return (
+        <div className="admin-carousel">
+            <div className="loading-state">
+            <div className="dash-loading-spinner"></div>
+            <p>Loading...</p>
+            </div>
+        </div>
+        );
+    }
     return (
         <div className="chef-page">
             <div className="chef-page-header">
@@ -43,7 +54,11 @@ function ChefPage() {
                         <div>
                             <h1>Chef's Kitchen</h1>
                             <p>Manage your orders efficiently</p>
-                            <p className="panel-user-info"> Logged in as: {user?.name}</p>
+                            <div className="chef-info-panel">
+                                <p className="panel-user-info"> Logged in as: {user?.name}</p>
+                                <p className="panel-user-info">Email: {user?.email}</p>
+                                <button className="logout-button" onClick={() => dispatch({ type: "LOGOUT" })}>Logout</button>
+                            </div>
                         </div>
                     </div>
                     <div className="orders-count">
@@ -144,17 +159,15 @@ function ChefPage() {
                                     </div>
 
                                     <div className="order-actions">
-                                        <button
+                                        {order.status !== "completed" && (
+                                            <button
                                             onClick={() => updateStatus(order.id, "completed")}
                                             className="action-btn update-btn"
-                                            disabled={order.status === "completed" || submittingId === order.id}
+                                            disabled={submittingId === order.id}
                                             >
-                                            {submittingId === order.id
-                                                ? "Updating..." 
-                                                : order.status === "completed" 
-                                                ? "" 
-                                                : "Done Cooking"}
-                                        </button>
+                                            {submittingId === order.id ? "Updating..." : "Done Cooking"}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             ))}

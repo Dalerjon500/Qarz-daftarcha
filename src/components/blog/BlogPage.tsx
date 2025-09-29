@@ -62,6 +62,17 @@ const BlogPage = () => {
       likes: 41,
       comments: 15,
       readTime: '9 min'
+    },
+    {
+      id: 5,
+      title: 'Healthy Breakfast Smoothies',
+      excerpt: 'Delicious and nutritious smoothies made with fruits and vegetables for a healthy start to your day.',
+      category: 'Recipes',
+      author: 'Emily Davis',
+      date: 'April 22, 2023',
+      likes: 27,
+      comments: 10,
+      readTime: '6 min'
     }
   ];
 

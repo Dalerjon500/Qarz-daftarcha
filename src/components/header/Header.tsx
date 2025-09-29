@@ -4,7 +4,7 @@ import userLogo from "../../assets/Profile.svg";
 import cartLogo from "../../assets/Buy.svg";
 import useContextPro from '../../hooks/useContextPro';
 import { Avatar, Box, Menu, MenuItem, Typography } from '@mui/material';
-import { FaChevronDown, FaSearch, FaSignOutAlt, FaUserAlt, FaUserShield } from 'react-icons/fa';
+import { FaChevronDown, FaSearch, FaSignOutAlt, FaUser, FaUserAlt, FaUserShield } from 'react-icons/fa';
 import { useState } from 'react';
 import { IoIosMenu } from 'react-icons/io';
 import { signOut } from 'firebase/auth';
@@ -12,7 +12,6 @@ import { auth } from '../../firebase';
 
 function Header() {
     const { state:{ user, cart}, dispatch } = useContextPro();
-    console.log(user);
     
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -157,7 +156,20 @@ function Header() {
                         {user.email}
                       </Typography>
                     </Box>
-                    
+                    <MenuItem 
+                      onClick={() => navigate("/profile")} 
+                      sx={{ 
+                        py: 1.5,
+                        '&:hover': {
+                          backgroundColor: 'rgba(211, 47, 47, 0.08)'
+                        }
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <FaUser style={{ color: '#ed7070ff', fontSize: '16px' }} />
+                        <span>Profile</span>
+                      </div>
+                    </MenuItem>
                     {user?.roles?.includes("ADMIN") && (
                       <MenuItem
                         onClick={handleMenuClose} 

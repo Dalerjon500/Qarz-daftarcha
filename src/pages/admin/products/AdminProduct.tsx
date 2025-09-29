@@ -7,14 +7,8 @@ import type { Product } from "../../../types/types";
 import UseDeleteModal from "../../../hooks/UseDeleteModal";
 
 function AdminProduct() {
-  const { products, addProduct, updateProduct, deleteProduct } = useProducts();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    setValue,
-  } = useForm();
+  const { products, addProduct, updateProduct, deleteProduct, loading } = useProducts();
+  const {register,handleSubmit,formState: { errors },reset,setValue,} = useForm();
   const { categories } = useCategories();
   const [isOpen, setIsOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -73,6 +67,17 @@ function AdminProduct() {
     setOpenDelete(false);
     setProductToDelete(null);
   };
+
+  if (loading) {
+    return (
+      <div className="admin-carousel">
+        <div className="loading-state">
+          <div className="dash-loading-spinner"></div>
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-product">

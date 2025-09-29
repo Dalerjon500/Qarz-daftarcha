@@ -5,7 +5,7 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDocs,
+  onSnapshot,
   orderBy,
   query,
   serverTimestamp,
@@ -16,25 +16,30 @@ import { db } from "../firebase";
 function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
-
-  const q = query(collection(db, "categories"), orderBy("createdAt", "asc"));
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getCategories();
-  }, []);
+    const q = query(collection(db, "categories"), orderBy("createdAt", "asc"));
 
-  const getCategories = async () => {
-    try {
-      const snapshot = await getDocs(q);
-      const categories: Category[] = snapshot.docs.map((docSnap) => ({
-        id: docSnap.id,
-        ...docSnap.data(),
-      })) as Category[];
-      setCategories(categories);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const categoryList: Category[] = snapshot.docs.map((docSnap) => ({
+          id: docSnap.id,
+          ...docSnap.data(),
+        })) as Category[];
+        setCategories(categoryList);
+        setLoading(false);
+      },
+      (err) => {
+        console.error("Error fetching categories:", err);
+        setError("Failed to fetch categories");
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
 
   const addCategory = async (newCategory: Omit<Category, "id">) => {
     try {
@@ -42,7 +47,6 @@ function useCategories() {
         ...newCategory,
         createdAt: serverTimestamp(),
       });
-      await getCategories(); // ✅ UI yangilanadi
     } catch (err) {
       console.error("Add category error:", err);
       setError("Failed to add category");
@@ -53,7 +57,6 @@ function useCategories() {
     try {
       const docRef = doc(db, "categories", id);
       await updateDoc(docRef, updatedData);
-      await getCategories(); // ✅ yangilangan ma'lumot qayta yuklanadi
     } catch (err) {
       console.error("Update category error:", err);
       setError("Failed to update category");
@@ -64,14 +67,13 @@ function useCategories() {
     try {
       const docRef = doc(db, "categories", id);
       await deleteDoc(docRef);
-      await getCategories(); // ✅ UI yangilanadi
     } catch (err) {
       console.error("Delete category error:", err);
       setError("Failed to delete category");
     }
   };
 
-  return { categories, error, addCategory, updateCategory, deleteCategory };
+  return { categories, error, addCategory, updateCategory, deleteCategory, loading };
 }
 
 export default useCategories;

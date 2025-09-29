@@ -1,4 +1,4 @@
-import { FaShoppingCart, FaTrash, FaArrowLeft,  FaTag } from 'react-icons/fa';
+import { FaShoppingCart, FaTrash, FaArrowLeft,  FaTag, FaTruck, FaCreditCard } from 'react-icons/fa';
 import { IoBagCheckOutline } from 'react-icons/io5';
 import useContextPro from '../../hooks/useContextPro';
 import { useNavigate } from 'react-router-dom';
@@ -6,9 +6,11 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { getAuth } from 'firebase/auth';
 import type { Product } from '../../types/types';
+import { useState } from 'react';
 
 function CartPage() {
     const { state: { cart }, dispatch } = useContextPro();
+    const [isSaving, setIsSaving] = useState(false)
     const toNumber = (value: unknown) => {
         const n = Number(value);
         return Number.isFinite(n) ? n : 0;
@@ -17,7 +19,6 @@ function CartPage() {
     const formatMoney = (value: unknown) => toNumber(value).toFixed(2);
 
     const totalPrice = cart.reduce((total, item) => total + toNumber(item.price) * toNumber(item.quantity ?? 1), 0);
-    const totalSavings = cart.reduce((total, item) => total + (toNumber(item.oldPrice) - toNumber(item.price)) * toNumber(item.quantity ?? 1), 0);
     const navigate = useNavigate();
 
      const deleteProduct = (cart : Product) => {
@@ -30,8 +31,8 @@ function CartPage() {
 
     const handleAddOrder = async () => {
         if (cart.length === 0) return;
-
         try {
+            setIsSaving(true);
             const auth = getAuth();
             const userId = auth.currentUser?.uid || '';
             const orderRef = await addDoc(collection(db, 'orders'), {
@@ -59,10 +60,12 @@ function CartPage() {
                     createdAt: new Date()
                 });
             }
-            navigate('/');
+            navigate('/cart/order-status');
             dispatch({ type: 'CLEAR_CART' });
         } catch (e) {
             console.error('Failed to place order', e);
+        } finally {
+            setIsSaving(false);
         }
     };
     return (
@@ -150,22 +153,35 @@ function CartPage() {
                                     <span>Items ({cart.length})</span>
                                     <span>${totalPrice.toFixed(2)}</span>
                                 </div>
-                                {totalSavings > 0 && (
-                                    <div className="summary-line savings">
-                                        <span>
-                                            <FaTag className="savings-icon" />
-                                            Savings
-                                        </span>
-                                        <span>-${totalSavings.toFixed(2)}</span>
-                                    </div>
-                                )}
                                 <div className="summary-line total">
                                     <span>Total Amount</span>
                                     <span>${totalPrice.toFixed(2)}</span>
                                 </div>
-                                <button className="checkout-btn" onClick={handleAddOrder}>
-                                    ORDER
-                                </button>
+                                <div className="checkout-btn-container">
+                                    <button
+                                        className={`checkout-btn ${isSaving ? "saving" : ""}`}
+                                        onClick={handleAddOrder}
+                                        disabled={isSaving}
+                                    >
+                                        {isSaving ? (
+                                            <>
+                                                <div className="spinner"></div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <FaCreditCard className="btn-icon" />
+                                                Order
+                                            </>
+                                        )}
+                                    </button>
+                                    <button
+                                        className="checkout-btn"
+                                        onClick={() => navigate('/cart/delivery')}
+                                    >
+                                        <FaTruck className="btn-icon" />
+                                        Delivery
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

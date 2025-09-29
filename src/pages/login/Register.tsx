@@ -14,7 +14,7 @@ type RegisterFormInputs = {
 };
 
 function Register() {
-    const {register, handleSubmit, formState: { errors }, reset} = useForm<RegisterFormInputs>()
+    const {register, handleSubmit, formState: { errors, isSubmitting }, reset} = useForm<RegisterFormInputs>()
     const navigate = useNavigate()
 
     const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
@@ -266,6 +266,7 @@ function Register() {
                     </div>         
                     
                     <button 
+                        disabled={isSubmitting}
                         type="submit" 
                         className="btn w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2" 
                         style={{ 
@@ -289,7 +290,16 @@ function Register() {
                             e.currentTarget.style.boxShadow = '0 4px 15px rgba(226, 26, 67, 0.3)';
                         }}
                     >
-                        <span style={{ position: 'relative', zIndex: 2 }}>Sign Up Now</span>
+                         {isSubmitting ? (
+                            <>
+                                <div className="spinner"></div> 
+                            </>
+                            ) : (
+                            <>
+                                <span style={{ position: 'relative', zIndex: 2 }}>Register</span>
+                                <FaArrowRight />
+                            </>
+                        )}
                         <FaArrowRight style={{ position: 'relative', zIndex: 2 }} />
                         <div style={{
                             position: 'absolute',

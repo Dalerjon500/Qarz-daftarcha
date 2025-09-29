@@ -454,6 +454,11 @@
     margin-right: -1rem;
 }
 
+.checkout-btn-container{
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
 .checkout-btn {
     display: inline-flex;
     align-items: center;
@@ -648,6 +653,22 @@
 
 .item-image.loading::after {
     opacity: 1;
+}
+
+.spinner {
+  display: inline-block;
+  width: 20px;   
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 2px solid #E21A43; 
+  border-radius: 50%;          
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 @keyframes loading {

@@ -13,10 +13,11 @@ import type { CarouselItem } from "../../types/types";
 
 function Hero() {
   const { carousel, loading } = useCarousel();
-  if (loading) return <div className="products-loading">
+  
+  if (loading) { return <div className="products-loading">
                             <div className="loading-spinner">   
                             </div>
-                        </div>;
+                        </div>;}
 
   const settings = {
     dots: true,

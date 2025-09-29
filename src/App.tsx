@@ -19,6 +19,10 @@ import AdminUsers from "./pages/admin/users/AdminUsers"
 import CartStatus from "./components/cartStatus/CartStatus"
 import WaiterPage from "./pages/waiter/WaiterPage"
 import BlogPage from "./components/blog/BlogPage"
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard"
+import DeliveryPage from "./pages/delivery/DeliveryPage"
+import HelloAdmin from "./pages/admin/HelloAdmin"
+import Profile from "./components/profile/Profile"
 
 
 function App() {
@@ -33,11 +37,13 @@ function App() {
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/home" element={<Home />} />
           <Route path="/shop" element={<ShopPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/cart/order-status" element={<CartStatus />} />
+          <Route path="/cart/delivery" element={<DeliveryPage />} />
         </Route>
 
         <Route element={<AuthLayout />}>
@@ -53,6 +59,8 @@ function App() {
               </ProtectedRoute>
             }
           >
+            <Route index element={<HelloAdmin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/products" element={<AdminProduct />} />
             <Route path="/admin/categories" element={<AdminCategories />} />
             <Route path="/admin/carousel" element={<AdminCarousel />} />

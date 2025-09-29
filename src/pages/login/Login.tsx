@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import type { User } from '../../types/types';
 
 const LoginForm = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, formState: { isSubmitting } } = useForm();
   const navigate = useNavigate();
 
   const Login = async (data: FieldValues) => {
@@ -208,6 +208,7 @@ const LoginForm = () => {
           </div>
 
           <button
+            disabled={isSubmitting}
             type="submit"
             className="btn w-100 py-3 fw-bold d-flex align-items-center justify-content-center gap-2"
             style={{ 
@@ -222,28 +223,33 @@ const LoginForm = () => {
               overflow: 'hidden',
               zIndex: 1
             }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(226, 26, 67, 0.4)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(226, 26, 67, 0.3)';
-            }}
           >
-            <span style={{ position: 'relative', zIndex: 2 }}>Sign In</span>
-            <FaArrowRight style={{ position: 'relative', zIndex: 2 }} />
-            <div style={{
-              position: 'absolute',
-              top: 0,
-              left: '-100%',
-              width: '100%',
-              height: '100%',
-              background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
-              transition: 'left 0.7s',
-              zIndex: 0
-            }} className="btn-shine"></div>
+            {isSubmitting ? (
+              <>
+                <span>Signing in...</span>
+                <div className="spinner"></div> 
+              </>
+            ) : (
+              <>
+                <span>Sign In</span>
+                <FaArrowRight />
+              </>
+            )}
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: '-100%',
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
+                transition: 'left 0.7s',
+                zIndex: 0
+              }}
+              className="btn-shine"
+            ></div>
           </button>
+
 
           <div className="text-center mt-4 pt-3" style={{ borderTop: '1px solid rgba(226, 26, 67, 0.1)' }}>
             <p className="text-muted small mb-0">

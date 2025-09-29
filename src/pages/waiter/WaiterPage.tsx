@@ -6,8 +6,8 @@ import useContextPro from "../../hooks/useContextPro";
 import { SiWine } from "react-icons/si";
 
 function WaiterPage() {
-    const {state: { user }} = useContextPro();
-    const { orders , getOrdersByStatus} = useOrders();
+    const {state: { user }, dispatch} = useContextPro();
+    const { orders, loading , getOrdersByStatus} = useOrders();
     const [filterStatus, setFilterStatus] = useState("all");
 
     const filteredOrders = filterStatus === "all" ? orders : getOrdersByStatus(filterStatus);
@@ -19,6 +19,17 @@ function WaiterPage() {
             default: return "status-badge";
         }
     };
+
+    if (loading) {
+        return (
+        <div className="admin-carousel">
+            <div className="loading-state">
+            <div className="dash-loading-spinner"></div>
+            <p>Loading...</p>
+            </div>
+        </div>
+        );
+    }
     return (
         <div className="chef-page">
             <div className="chef-page-header">
@@ -28,7 +39,11 @@ function WaiterPage() {
                         <div>
                             <h1>Waiter Dashboard</h1>
                             <p>Manage your orders efficiently</p>
-                            <p className="panel-user-info">Logged in as: {user?.name}</p>
+                            <div className="chef-info-panel">
+                                <p className="panel-user-info"> Logged in as: {user?.name}</p>
+                                <p className="panel-user-info">Email: {user?.email}</p>
+                                <button className="logout-button" onClick={() => dispatch({ type: "LOGOUT" })}>Logout</button>
+                            </div>
                         </div>
                     </div>
                     <div className="orders-count">
