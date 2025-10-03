@@ -53,7 +53,7 @@ function AdminSidebar() {
                     </h4>
                 )}
                 <button
-                    className="toggle-btn btn btn-sm"
+                    className="toggle-btn btn-sm"
                     onClick={() => setIsOpen(!isOpen)}
                 >
                     <List />

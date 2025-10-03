@@ -16,20 +16,20 @@ function IsLoading() {
   return (
     <div className="loading-container">
       <div className="loading-content">
-        <div className="icon-container">
-          <div className={`icon-item ${currentIcon === 0 ? 'active' : ''}`}>
+        <div className="loading-icon-container">
+          <div className={`loading-icon-item ${currentIcon === 0 ? 'active' : ''}`}>
             <FaBreadSlice className="icon" />
           </div>
-          <div className={`icon-item ${currentIcon === 1 ? 'active' : ''}`}>
+          <div className={`loading-icon-item ${currentIcon === 1 ? 'active' : ''}`}>
             <FaEgg className="icon" />
           </div>
-          <div className={`icon-item ${currentIcon === 2 ? 'active' : ''}`}>
+          <div className={`loading-icon-item ${currentIcon === 2 ? 'active' : ''}`}>
             <FaBacon className="icon" />
           </div>
-          <div className={`icon-item ${currentIcon === 3 ? 'active' : ''}`}>
+          <div className={`loading-icon-item ${currentIcon === 3 ? 'active' : ''}`}>
             <GiFrenchFries className="icon" />
           </div>
-          <div className={`icon-item ${currentIcon === 4 ? 'active' : ''}`}>
+          <div className={`loading-icon-item ${currentIcon === 4 ? 'active' : ''}`}>
             <FaCoffee className="icon" />
           </div>
         </div>

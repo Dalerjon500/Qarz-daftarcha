@@ -76,12 +76,13 @@ export const useOrders = () => {
                 notes: orderData.notes || "",
                 deliveryDate: orderData.deliveryDate || "",
                 location: orderData.location,
+                phone: orderData.phone
               } as Order
             })
           )
 
           setOrders(allOrders)
-          console.log(`Real-time: ${allOrders.length} ta order yangilandi`)
+          // console.log(`Real-time: ${allOrders.length} ta order yangilandi`)
           setLoading(false)
         } catch (err) {
           setError(err instanceof Error ? err.message : "An error occurred")

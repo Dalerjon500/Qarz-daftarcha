@@ -20,7 +20,7 @@ const LoginForm = () => {
       const userDocSnap = await getDoc(userDocRef);
       if (userDocSnap.exists()) {
         const currentUser = { id: user.uid, ...userDocSnap.data() } as User;
-        console.log("currentUser", currentUser);
+        // console.log("currentUser", currentUser);
         
         if (currentUser?.roles) {
           localStorage.setItem("role", currentUser.roles.join(","));

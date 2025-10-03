@@ -143,7 +143,7 @@ function useProducts() {
             }
 
             return {
-              id: docSnap.id, // 🔥 endi faqat shu yerda id bor
+              id: docSnap.id, 
               ...reviewData,
               user,
             };

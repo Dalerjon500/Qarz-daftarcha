@@ -28,7 +28,6 @@ function WaiterPage() {
   const [filterStatus, setFilterStatus] = useState("all");
   const [submittingId, setSubmittingId] = useState<string | null>(null);
 
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrderLocation, setSelectedOrderLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [driverLocation, setDriverLocation] = useState<{ lat: number; lng: number } | null>(null);

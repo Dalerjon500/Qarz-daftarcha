@@ -21,15 +21,18 @@ function LocateControl({ setSelectedLocation }: { setSelectedLocation: (loc: { l
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
             (pos) => {
-              const { latitude, longitude } = pos.coords;
+              const { latitude, longitude, accuracy } = pos.coords;
+              console.log("My location:", latitude, longitude, "Accuracy:", accuracy, "meters");
               setSelectedLocation({ lat: latitude, lng: longitude });
-              map.setView([latitude, longitude], 15); 
+              map.setView([latitude, longitude], 15);
             },
             (err) => {
               console.error("Geolocation error:", err);
               alert("Could not get your location");
-            }
+            },
+            { enableHighAccuracy: true } 
           );
+
         }
       };
 

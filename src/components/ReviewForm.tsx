@@ -31,7 +31,7 @@ function ReviewForm({ productId }: { productId: string }) {
 
     setIsSubmitting(true);
     try {
-      console.log("Submitting review...");
+      // console.log("Submitting review...");
       const reviewData = {
         title: data.title,
         rating: Number(data.rating), 
@@ -91,7 +91,7 @@ function ReviewForm({ productId }: { productId: string }) {
                   {...field}
                   value={Number(field.value)}
                   onChange={(_, value) => {
-                    console.log("Rating changed:", value);
+                    // console.log("Rating changed:", value);
                     field.onChange(value || 0);
                   }}
                   size="large"

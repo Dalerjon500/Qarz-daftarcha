@@ -174,7 +174,7 @@ function CartStatus() {
                             </div>
                           )}
                           {order.phone && (
-                            <div className="detail-item">
+                            <div className="status-detail-item">
                               <FaPhone className="detail-icon" />
                               <span>{order.phone}</span>
                             </div>
