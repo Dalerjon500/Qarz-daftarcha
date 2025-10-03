@@ -1,6 +1,8 @@
 import {
   FaArrowRight,
   FaEnvelope,
+  FaEye,
+  FaEyeSlash,
   FaLock,
   FaUser,
   FaUtensils,
@@ -12,6 +14,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, db } from "../../firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
+import { useState } from "react";
 
 type RegisterFormInputs = {
   name: string;
@@ -28,6 +31,9 @@ function Register() {
     reset,
   } = useForm<RegisterFormInputs>();
   const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (data) => {
     const { name, email, password, confirmPassword } = data;
@@ -301,19 +307,32 @@ function Register() {
               </span>
               <input
                 {...register("password", { required: true, minLength: 8 })}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="form-control"
                 id="password"
                 style={{
                   borderLeft: "none",
                   borderColor: "rgba(226, 26, 67, 0.3)",
                   boxShadow: "none",
-                  borderTopRightRadius: "12px",
-                  borderBottomRightRadius: "12px",
+                  borderTopRightRadius: "0",
+                  borderBottomRightRadius: "0",
                   padding: "0.75rem 1rem",
                   fontSize: "1rem",
                 }}
               />
+              <span
+                className="input-group-text bg-white"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  cursor: "pointer",
+                  borderLeft: "none",
+                  borderColor: "rgba(226, 26, 67, 0.3)",
+                  borderTopRightRadius: "12px",
+                  borderBottomRightRadius: "12px",
+                }}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
             {errors.password && (
               <p className="text-danger mt-2 small">
@@ -324,6 +343,7 @@ function Register() {
             )}
           </div>
 
+          {/* Confirm Password */}
           <div className="mb-4">
             <label
               htmlFor="confirm-password"
@@ -346,19 +366,32 @@ function Register() {
               </span>
               <input
                 {...register("confirmPassword", { required: true })}
-                type="password"
+                type={showConfirm ? "text" : "password"}
                 className="form-control"
                 id="confirm-password"
                 style={{
                   borderLeft: "none",
                   borderColor: "rgba(226, 26, 67, 0.3)",
                   boxShadow: "none",
-                  borderTopRightRadius: "12px",
-                  borderBottomRightRadius: "12px",
+                  borderTopRightRadius: "0",
+                  borderBottomRightRadius: "0",
                   padding: "0.75rem 1rem",
                   fontSize: "1rem",
                 }}
               />
+              <span
+                className="input-group-text bg-white"
+                onClick={() => setShowConfirm(!showConfirm)}
+                style={{
+                  cursor: "pointer",
+                  borderLeft: "none",
+                  borderColor: "rgba(226, 26, 67, 0.3)",
+                  borderTopRightRadius: "12px",
+                  borderBottomRightRadius: "12px",
+                }}
+              >
+                {showConfirm ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
             {errors.confirmPassword && (
               <p className="text-danger mt-2 small">

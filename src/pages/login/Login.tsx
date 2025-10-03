@@ -1,4 +1,4 @@
-import { FaEnvelope, FaLock, FaArrowRight, FaUtensils } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaArrowRight, FaUtensils, FaEyeSlash, FaEye } from 'react-icons/fa';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { type FieldValues, useForm } from 'react-hook-form';
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -7,10 +7,12 @@ import { doc, getDoc } from 'firebase/firestore';
 import { toast } from 'react-toastify';
 import type { User } from '../../types/types';
 import { FirebaseError } from 'firebase/app';
+import { useState } from 'react';
 
 const LoginForm = () => {
   const { register, handleSubmit, formState: { isSubmitting } } = useForm();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const Login = async (data: FieldValues) => {
     try {
@@ -170,47 +172,23 @@ const LoginForm = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="password" className="form-label fw-semibold" style={{ color: '#333' }}>Password</label>
+            <label htmlFor="password" className="form-label fw-semibold">Password</label>
             <div className="input-group input-group-lg">
-              <span className="input-group-text bg-white" style={{ 
-                borderRight: 'none',
-                borderColor: 'rgba(226, 26, 67, 0.3)',
-                borderTopLeftRadius: '12px',
-                borderBottomLeftRadius: '12px'
-              }}>
-                <FaLock style={{ color: '#E21A43' }} />
-              </span>
+              <span className="input-group-text bg-white"><FaLock style={{ color: '#E21A43' }} /></span>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="form-control"
                 id="password"
                 placeholder="••••••••"
                 {...register('password', { required: true })}
-                style={{ 
-                  borderLeft: 'none',
-                  borderColor: 'rgba(226, 26, 67, 0.3)',
-                  boxShadow: 'none',
-                  borderTopRightRadius: '12px',
-                  borderBottomRightRadius: '12px',
-                  padding: '0.75rem 1rem',
-                  fontSize: '1rem'
-                }}
               />
-            </div>
-            <div className="text-end mt-2">
-              <NavLink 
-                to="/forgot-password" 
-                style={{ 
-                  color: '#E21A43', 
-                  fontSize: '0.9rem',
-                  textDecoration: 'none',
-                  fontWeight: '500',
-                  transition: 'all 0.3s ease'
-                }}
-                className="hover-underline"
+              <span 
+                className="input-group-text bg-white" 
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowPassword(!showPassword)}
               >
-                Forgot password?
-              </NavLink>
+                {showPassword ? <FaEyeSlash style={{ color: '#E21A43' }} /> : <FaEye style={{ color: '#E21A43' }} />}
+              </span>
             </div>
           </div>
 
