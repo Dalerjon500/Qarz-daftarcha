@@ -4,61 +4,18 @@ import MainLayout from "./layout/MainLayout"
 import AuthLayout from "./layout/AuthLayout"
 import Login from "./pages/login/Login"
 import Register from "./pages/login/Register"
-import ProtectedRoute from "./components/ProtectedRoute"
+import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from "./layout/AdminLayout"
-import useLoading from "./hooks/useLoading"
-import IsLoading from "./components/IsLoading"
-import NotFound from "./components/NotFound"
-import CartPage from "./pages/cart/CartPage"
-import ShopPage from "./pages/shop/ShopPage"
-import AdminProduct from "./pages/admin/products/AdminProduct"
-import AdminCategories from "./pages/admin/categories/AdminCategories"
-import AdminCarousel from "./pages/admin/carousel/AdminCarousel"
-import ChefPage from "./pages/chef/ChefPage"
-import AdminUsers from "./pages/admin/users/AdminUsers"
-import CartStatus from "./components/cartStatus/CartStatus"
-import WaiterPage from "./pages/waiter/WaiterPage"
-import BlogPage from "./components/blog/BlogPage"
-import AdminDashboard from "./pages/admin/dashboard/AdminDashboard"
-import DeliveryPage from "./pages/delivery/DeliveryPage"
 import HelloAdmin from "./pages/admin/HelloAdmin"
-import Profile from "./components/profile/Profile"
-import ProductDisplay from "./components/product/ProductDisplay"
-import AOS from "aos";
-import "aos/dist/aos.css";
-import { useEffect } from "react"
-import ScrollToTop from "./hooks/ScroolToTop"
-import BestSelling from "./components/bestSelling/BestSelling"
-import Products from "./components/product/Products"
+import NotFound from './components/NotFound';
 
 function App() {
-  const { loading } = useLoading();
-
-   useEffect(() => {
-    AOS.init({ duration: 2000 });
-    }, []);
-
-  if (loading) {
-    return <IsLoading />;
-  }
-
 
   return (
     <div>
-      <ScrollToTop />
       <Routes>
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/shop" element={<ShopPage />} />
-          <Route path="/category" element={<BestSelling />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/shop/:id" element={<ProductDisplay />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/cart/order-status" element={<CartStatus />} />
-          <Route path="/cart/delivery" element={<DeliveryPage />} />
         </Route>
 
         <Route element={<AuthLayout />}>
@@ -75,33 +32,6 @@ function App() {
             }
           >
             <Route index element={<HelloAdmin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/products" element={<AdminProduct />} />
-            <Route path="/admin/categories" element={<AdminCategories />} />
-            <Route path="/admin/carousel" element={<AdminCarousel />} />
-            <Route path="/admin/orders" element={<ChefPage />} />
-            <Route path="/admin/waiter" element={<WaiterPage />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-          </Route>
-
-          <Route
-            path="/chef"
-            element={
-              <ProtectedRoute role="CHEF">
-                <ChefPage />
-              </ProtectedRoute>
-            }
-          > 
-          </Route>
-
-          <Route
-            path="/waiter"
-            element={
-              <ProtectedRoute role="WAITER">
-                <WaiterPage />
-              </ProtectedRoute>
-            }
-          >
           </Route>
           <Route path="*" element={<NotFound />} />
       </Routes>
