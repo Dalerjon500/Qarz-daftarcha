@@ -30,10 +30,11 @@ const About = () => {
   // AOS ni initialize qilish
   useEffect(() => {
     AOS.init({
-      duration: 1000,
-      easing: 'ease-in-out',
+      duration: 500,
+      easing: 'ease-out',
       once: true,
-      mirror: false
+      mirror: false,
+      offset: 80, 
     });
   }, []);
 
@@ -166,7 +167,7 @@ const About = () => {
                         key={skill.name}
                         className="skill-card"
                         data-aos="fade-up"
-                        data-aos-delay={index * 100}
+                        data-aos-delay={index * 50}
                       >
                         <div className="skill-header">
                           <div 
