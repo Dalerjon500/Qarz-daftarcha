@@ -12,27 +12,6 @@ import {
   SiTypescript,
 } from "react-icons/si";
 
-function normalizeUrl(url: string) {
-  if (!url) return "";
-  let trimmed = url.trim();
-
-  if (!/^https?:\/\//i.test(trimmed)) {
-    trimmed = "https://" + trimmed;
-  }
-
-  trimmed = trimmed.replace(/\/+$/, "");
-  return trimmed;
-}
-
-function getPreviewSrc(demoLink: string) {
-  const normalized = normalizeUrl(demoLink);
-  if (!normalized) return "";
-
-  return `https://image.thum.io/get/width/1200/${encodeURIComponent(
-    normalized
-  )}`;
-}
-
 function WithBackend() {
   const { projects, loading } = useProjects();
 
@@ -55,7 +34,7 @@ function WithBackend() {
     <div className="without-backend-container">
       <div className="projects-grid">
         {projects.map((project) => {
-          const previewSrc = getPreviewSrc(project.demoLink);
+          const screenshotUrl = `https://api.microlink.io/?url=${project.demoLink}&screenshot=true&meta=false&embed=screenshot.url`;
 
           return (
             <div key={project.id} className="project-card">
@@ -65,17 +44,9 @@ function WithBackend() {
 
               {/* Project Image */}
               <div className="card-image-container">
-                <img
-                  src={previewSrc}
-                  alt={project.title}
-                  className="card-image"
-                  loading="lazy"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src =
-                      "data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22300%22%20height%3D%22180%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20width%3D%22300%22%20height%3D%22180%22%20fill%3D%22%23f3f4f6%22/%3E%3Ctext%20x%3D%22150%22%20y%3D%2295%22%20font-size%3D%2214%22%20text-anchor%3D%22middle%22%20fill%3D%22%23999%22%3ENo%20preview%3C/text%3E%3C/svg%3E";
-                  }}
-                />
+              <a href={project.demoLink} target="_blank" rel="noopener noreferrer">
+                <img src={screenshotUrl} alt={project.title} className="card-image" />
+              </a>
 
                 {/* Overlay va tech stack */}
                 <div className="image-gradient"></div>
@@ -119,7 +90,7 @@ function WithBackend() {
                     </a>
                   )}
                   <a
-                    href={normalizeUrl(project.demoLink)}
+                    href={project.demoLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="action-btn live-btn magnetic"
