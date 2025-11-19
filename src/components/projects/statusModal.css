@@ -321,3 +321,82 @@
 .status-option[data-status="DONE"].selected {
   background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(46, 204, 113, 0.05) 100%);
 }
+
+
+
+.react-select-container {
+  .react-select__control {
+    background: rgba(255,255,255,0.03) !important;
+    border: 1.5px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+    min-height: 52px !important;
+    transition: all 0.3s ease !important;
+    
+    &:hover {
+      border-color: rgba(99, 102, 241, 0.5) !important;
+    }
+    
+    &.react-select__control--is-focused {
+      border-color: #6366f1 !important;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1) !important;
+    }
+  }
+  
+  .react-select__value-container {
+    padding: 8px 12px !important;
+  }
+  
+  .react-select__input {
+    color: white !important;
+  }
+  
+  .react-select__single-value {
+    color: white !important;
+  }
+  
+  .react-select__placeholder {
+    color: rgba(255,255,255,0.4) !important;
+  }
+  
+  .react-select__menu {
+    background: #2d2d2d !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+  }
+  
+  .react-select__option {
+    background: transparent !important;
+    color: rgba(255,255,255,0.8) !important;
+    
+    &:hover {
+      background: rgba(255,255,255,0.05) !important;
+      color: white !important;
+    }
+    
+    &.react-select__option--is-selected {
+      background: #6366f1 !important;
+      color: white !important;
+    }
+  }
+  
+  .react-select__multi-value {
+    background: #6366f1 !important;
+    border-radius: 6px !important;
+  }
+  
+  .react-select__multi-value__label {
+    color: white !important;
+    font-weight: 500 !important;
+  }
+  
+  .react-select__multi-value__remove {
+    color: white !important;
+    border-radius: 0 6px 6px 0 !important;
+    
+    &:hover {
+      background: rgba(239, 68, 68, 0.8) !important;
+      color: white !important;
+    }
+  }
+}

@@ -1,75 +1,64 @@
 import {
-  Typography,
   Chip,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
+  Button
 } from "@mui/material";
-import { FaPlus, FaTrash } from "react-icons/fa";
-import type { Status } from "../../types/types";
+import { FaPlus } from "react-icons/fa";
 import { statusLabels } from "../../utils";
-import useTaskStatus from "../../hooks/useTaskStatus";
 import { useState } from "react";
-import AddTaskModal from "./AddTaskModal";
+import AddTaskModal from "./add_modal/AddTaskModal";
 import TaskList from "../tasks/TaskList";
 import useTasks from "../../hooks/useTasks";
 
 interface StatusCardProps {
-  status: Status;
+  statusName: string; 
 }
 
-function StatusCard({ status }: StatusCardProps) {
-  const { deleteTaskStatus } = useTaskStatus();
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+function StatusCard({ statusName }: StatusCardProps) {
   const [openAddTask, setOpenAddTask] = useState(false);
-  const {tasks} = useTasks();
+  
+  const { tasks } = useTasks();
+
+  const statusGroup = tasks.find((t) => t.status === statusName);
+  const taskList = statusGroup ? statusGroup.tasks : [];
 
   const handleOpen = () => setOpenAddTask(true);
   const handleClose = () => setOpenAddTask(false);
 
-  const handleDeleteClick = () => {
-    setDeleteModalOpen(true);
+  const getStatusColor = (status: string) => {
+    const statusMap: { [key: string]: string } = {
+      'TODO': 'todo',
+      'IN_PROGRESS': 'inprogress',
+      'VERIFIED': 'verified', 
+      'DONE': 'done'
+    };
+    
+    const normalizedStatus = status.replace(/_/g, '').toUpperCase();
+    return statusMap[normalizedStatus] || statusMap[status] || 'todo';
   };
 
-  const handleConfirmDelete = () => {
-    deleteTaskStatus(status.id);
-    setDeleteModalOpen(false);
-  };
-
-  const handleCancelDelete = () => {
-    setDeleteModalOpen(false);
+  const formatStatusName = (status: string) => {
+    return statusLabels[status] || status.replace(/_/g, ' ');
   };
 
   return (
     <>
-      <div className="status-card" data-status={status.title}>
+      <div 
+        className="status-card" 
+        data-status={getStatusColor(statusName)}
+      >
         <div className="status-card-header">
-          <div className="status-indicator" />
-          <Chip
-            className="status-badge"
-            label={statusLabels[status.title] || status.title}
-          />
-
-          <div className="status-card-actions">
-            <button
-              className="delete-status-btn"
-              onClick={handleDeleteClick}
-              aria-label="Delete status"
-            >
-              <FaTrash className="delete-status-icon" />
-            </button>
+          <div className="status-header-main">
+            <div className="status-indicator" />
+            <Chip
+              className="status-badge"
+              label={`${formatStatusName(statusName)} • ${taskList.length}`}
+            />
           </div>
         </div>
 
         <div className="status-card-content">
-          <Typography className="status-card-title">
-            {statusLabels[status.title] || status.title} ({tasks.filter((task) => task.status === status.title).length})
-          </Typography>
-
-          <TaskList status={status.title} />
-
+          <TaskList tasks={taskList} />
+          
           <Button
             className="add-task-btn"
             variant="outlined"
@@ -82,45 +71,8 @@ function StatusCard({ status }: StatusCardProps) {
         </div>
       </div>
 
-      <Dialog
-        open={deleteModalOpen}
-        onClose={handleCancelDelete}
-        className="delete-confirmation-modal"
-        PaperProps={{
-          className: "modal-paper",
-        }}
-      >
-        <DialogTitle className="modal-title">Delete Status</DialogTitle>
-
-        <DialogContent className="modal-content">
-          <Typography>
-            Are you sure you want to delete the "
-            {statusLabels[status.title] || status.title}" status? This action
-            cannot be undone.
-          </Typography>
-        </DialogContent>
-
-        <DialogActions className="modal-actions">
-          <Button
-            onClick={handleCancelDelete}
-            className="cancel-btn"
-            variant="outlined"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleConfirmDelete}
-            className="confirm-delete-btn"
-            variant="contained"
-            color="error"
-            startIcon={<FaTrash />}
-          >
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-
       <AddTaskModal open={openAddTask} onClose={handleClose} />
+
     </>
   );
 }

@@ -1,44 +1,18 @@
-import useTaskStatus from "../../hooks/useTaskStatus";
-import { Button } from '@mui/material';
-import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
-import StatusModal from "./StatusModal";
 import StatusCard from "./StatusCard";
-import type { Status } from "../../types/types";
+import useTasks from '../../hooks/useTasks';
 
 function Projects() {
-  const { statusList } = useTaskStatus(); 
-  const [open, setOpen] = useState(false);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const order = ["TODO", "INPROGRESS", "VERIFIED", "DONE"];
-
-  const sortedStatus = [...statusList].sort(
-    (a, b) => order.indexOf(a.title) - order.indexOf(b.title)
-  );
-
+  const { taskStatus } = useTasks(); 
+  
   return (
     <div className="projects-container">
       <div className="projects-header">
-        <h1  className="projects-title">
-          Projects
-        </h1>
-        <Button 
-          className="create-project-btn"
-          variant="contained" 
-          onClick={handleOpen}
-          startIcon={<FaPlus />}
-        >
-          Create Project
-        </Button>
+        <h1 className="projects-title">Projects</h1>
       </div>
 
-      <StatusModal open={open} onClose={handleClose} />
-
       <div className="status-grid">
-        {sortedStatus.map((item : Status) => (
-          <StatusCard key={item.id} status={item} />
+        {taskStatus.map((statusName: string) => (
+          <StatusCard key={statusName} statusName={statusName} />
         ))}
       </div>
     </div>

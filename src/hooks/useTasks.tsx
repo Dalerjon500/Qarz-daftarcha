@@ -1,24 +1,29 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../apiClient/apiClient";
-import type { FieldValues } from "react-hook-form";
-import type { Task } from "../types/types";
+import type { ReqTask, ResponseTask } from "../types/types";
 
 function useTasks() {
   const queryClient = useQueryClient();
 
+  const { data: taskStatus = [] } = useQuery({
+    queryKey: ["tasks-status"],
+    queryFn: async () => {
+      const res = await apiClient.get<string[]>("/tasks/task-status");
+      return res.data;
+    },
+  });
+
   const { data: tasks = [] } = useQuery({
     queryKey: ["tasks"],
     queryFn: async () => {
-      const res = await apiClient.get<Task[]>("/tasks");
+      const res = await apiClient.get<ResponseTask[]>("/tasks");
       return res.data;
     },
-    staleTime: 2 * 60 * 1000, 
-    gcTime: 5 * 60 * 1000, 
-    refetchInterval: 15 * 1000, 
   });
 
-  const { mutate: addTask } = useMutation({
-    mutationFn: async (task: FieldValues) => {
+  console.log("Fetched tasks:", tasks);
+  const { mutate: addTask, isPending: adding } = useMutation({
+    mutationFn: async (task: ReqTask) => {
       const res = await apiClient.post("/tasks", task);
       return res.data;
     },
@@ -27,40 +32,38 @@ function useTasks() {
     },
   });
 
-  const useTasksByStatus = (status: string) => {
-    return useQuery({
-      queryKey: ["tasks", status],
-      queryFn: async () => {
-        const res = await apiClient.get<Task[]>(`/tasks/status/${status}`);
-        return res.data;
-      },
-      staleTime: 1 * 60 * 1000, 
-      gcTime: 3 * 60 * 1000, 
-      refetchInterval: 20 * 1000, 
-    });
+  const { mutate: updateTask, isPending: updating } = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: ReqTask }) => {
+      const res = await apiClient.put(`/tasks/${id}`, data);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+
+  const { mutate: deleteTask, isPending: deleting } = useMutation({
+    mutationFn: async (id: number) => {
+      await apiClient.delete(`/tasks/${id}`);
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+  });
+
+  return {
+    taskStatus,
+    tasks,
+    addTask,
+    updateTask,
+    deleteTask,
+    loading: {
+      adding,
+      updating,
+      deleting,
+    },
   };
-
-  const { mutate: deleteTask } = useMutation({
-    mutationFn: async (task_id: number) => {
-      const res = await apiClient.delete(`/tasks/${task_id}`);
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-    },
-  })
-
-  const { mutate: updateTask } = useMutation({
-    mutationFn: async (task: FieldValues) => {
-      const res = await apiClient.put(`/tasks/${task.id}`, task);
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["tasks"] });
-    },
-  })
-
-  return { tasks, addTask, useTasksByStatus, deleteTask, updateTask };
 }
 
 export default useTasks;

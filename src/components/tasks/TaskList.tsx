@@ -10,25 +10,34 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
+import type { Task } from "../../types/types";
+import AddTaskModal from "../projects/add_modal/AddTaskModal";
 
 interface TaskListProps {
-  status: string;
+  tasks: Task[];
 }
 
-function TaskList({ status }: TaskListProps) {
-  const { useTasksByStatus, deleteTask } = useTasks();
+function TaskList({ tasks }: TaskListProps) {
+  const { deleteTask } = useTasks();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
-  const { data: tasks = [], isLoading } = useTasksByStatus(status);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
-  const handleDeleteClick = (task_id: number) => {
-    setTaskToDelete(task_id);
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task);
+    setEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (task: Task, e: React.MouseEvent) => {
+    e.stopPropagation(); // Task bosilishini oldini olish
+    setTaskToDelete(task);
     setDeleteModalOpen(true);
   };
 
   const handleConfirmDelete = () => {
     if (taskToDelete) {
-      deleteTask(taskToDelete);
+      deleteTask(taskToDelete.id);
       setDeleteModalOpen(false);
       setTaskToDelete(null);
     }
@@ -39,95 +48,69 @@ function TaskList({ status }: TaskListProps) {
     setTaskToDelete(null);
   };
 
-  const taskToDeleteData = tasks.find((task) => task.id === taskToDelete);
-
-  if (isLoading) {
-    return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Loading tasks...</p>
-      </div>
-    );
-  }
+  const handleCloseEditModal = () => {
+    setEditModalOpen(false);
+    setSelectedTask(null);
+  };
 
   if (tasks.length === 0) {
     return (
       <div className="empty-state">
         <div className="empty-icon">📝</div>
-        <h3>No tasks available</h3>
-        <p>There are no tasks with status "{status}"</p>
+        <h3>No tasks yet</h3>
+        <p>Add your first task to get started</p>
       </div>
     );
   }
-
-  console.log("tasks", tasks);
 
   return (
     <div className="task-list-container">
       <div className="tasks-grid">
         {tasks.map((task) => (
-          <div key={task.id} className="task-card">
+          <div 
+            key={task.id} 
+            className="task-card"
+            onClick={() => handleTaskClick(task)}
+          >
             <div className="task-header">
               <div className="task-title-section">
                 <h3 className="task-title">{task.title}</h3>
+                
                 <div className="task-meta">
-                  {task.assignee && task.assignee.length > 0 && (
-                    <div className="assignee-info">
-                      <FaUser className="meta-icon" />
-                      <span className="assignee-names">
-                        {Array.isArray(task.assignee)
-                          ? task.assignee
-                              .map((name) => {
-                                const parts = name.trim().split(" ");
-                                if (parts.length >= 2) {
-                                  return `${parts[0]
-                                    .charAt(0)
-                                    .toUpperCase()}. ${parts[1]}`;
-                                }
-                                return name.length > 10
-                                  ? name.substring(0, 8) + "..."
-                                  : name;
-                              })
-                              .join(", ")
-                          : (() => {
-                              const name = task.assignee;
-                              const parts = name.trim().split(" ");
-                              if (parts.length >= 2) {
-                                return `${parts[0].charAt(0).toUpperCase()}. ${
-                                  parts[1]
-                                }`;
-                              }
-                              return name.length > 10
-                                ? name.substring(0, 8) + "..."
-                                : name;
-                            })()}
+                  {task.assignees && task.assignees.length > 0 && (
+                    <div className="meta-item assignee-info">
+                      <FaUser className="meta-icon user-icon" />
+                      <span className="meta-text">
+                        {task.assignees
+                          .map((user) => {
+                            const parts = user.username.split(" ");
+                            if (parts.length >= 2) {
+                              return `${parts[0][0]}. ${parts[1]}`;
+                            }
+                            return user.username;
+                          })
+                          .join(", ")}
                       </span>
                     </div>
                   )}
+
                   {task.priority && (
-                    <div
-                      className={`priority-info ${getPriorityColor(
-                        task.priority[0]
-                      )}`}
-                    >
-                      <FaFlag className="meta-icon" />
-                      <span>
-                        {Array.isArray(task.priority)
-                          ? task.priority[0]
-                          : task.priority}
-                      </span>
+                    <div className={`meta-item priority-info ${getPriorityColor(task.priority)}`}>
+                      <FaFlag className="meta-icon flag-icon" />
+                      <span className="meta-text">{task.priority}</span>
                     </div>
                   )}
                 </div>
               </div>
 
+              {/* Action Buttons */}
               <div className="task-actions">
                 <button
                   className="delete-task-btn"
-                  onClick={() => handleDeleteClick(task.id)}
+                  onClick={(e) => handleDeleteClick(task, e)}
                   aria-label="Delete task"
                 >
-                  <FaTrash className="action-icon" />
+                  <FaTrash className="delete-icon" />
                 </button>
               </div>
             </div>
@@ -135,12 +118,18 @@ function TaskList({ status }: TaskListProps) {
             {task.end_date && (
               <div className="task-due-date">
                 <FaCalendarAlt className="date-icon" />
-                <span>End: {formatDate(task.end_date)}</span>
+                <span className="date-text">Due: {formatDate(task.end_date)}</span>
               </div>
             )}
           </div>
         ))}
       </div>
+
+      <AddTaskModal 
+        open={editModalOpen} 
+        onClose={handleCloseEditModal} 
+        task={selectedTask}
+      />
 
       <Dialog
         open={deleteModalOpen}
@@ -150,13 +139,21 @@ function TaskList({ status }: TaskListProps) {
           className: "modal-paper",
         }}
       >
-        <DialogTitle className="modal-title">Delete Task</DialogTitle>
+        <DialogTitle className="modal-title">
+          <FaTrash className="title-icon" />
+          Delete Task
+        </DialogTitle>
 
         <DialogContent className="modal-content">
-          <Typography>
-            Are you sure you want to delete the "
-            {taskToDeleteData?.title || "this task"}" task? This action cannot
-            be undone.
+          <Typography className="modal-message">
+            Are you sure you want to delete "
+            <span className="task-name-highlight">
+              {taskToDelete?.title || "this task"}
+            </span>"?
+            <br />
+            <span className="warning-text">
+              This action cannot be undone.
+            </span>
           </Typography>
         </DialogContent>
 
@@ -172,10 +169,9 @@ function TaskList({ status }: TaskListProps) {
             onClick={handleConfirmDelete}
             className="confirm-delete-btn"
             variant="contained"
-            color="error"
             startIcon={<FaTrash />}
           >
-            Delete
+            Delete Task
           </Button>
         </DialogActions>
       </Dialog>
