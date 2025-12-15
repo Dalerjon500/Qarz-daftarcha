@@ -12,18 +12,54 @@ import {
   Chip,
   Paper,
   Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+  Pagination,
 } from "@mui/material";
 import useCars from "../../hooks/useCars";
-import type { Car, ReqCar } from "../../types/types";
-import { FaEdit, FaTrash, FaCar, FaPlus } from "react-icons/fa";
-import { useState } from "react";
+import type { Car, FilterParams, FilterState, ReqCar } from "../../types/types";
+import { FaEdit, FaTrash, FaCar, FaPlus, FaTimes } from "react-icons/fa";
+import { useEffect, useMemo, useState } from "react";
 import CarModal from "./CarForm";
 import { formatColorHex, getColorName } from "../../utils";
+import { useDebounce } from "../../hooks/useDebounce";
 
 function CarList() {
-  const { cars, addCar, deleteCar, updateCar } = useCars();
   const [open, setOpen] = useState(false);
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+  const [filters, setFilters] = useState<FilterState>({
+    color: "",
+    model: "",
+    year: 0,
+  })
+
+  const debouncedSearch = useDebounce(filters.model, 400);
+  const debouncedYear = useDebounce(filters.year.toString(), 400);
+
+  const filterParams = useMemo((): FilterParams => {
+
+    const params: FilterParams = {};
+
+    if (filters.color) params.color = filters.color;
+
+    if (debouncedYear) params.year = Number(debouncedYear);
+
+    if (debouncedSearch) params.model = debouncedSearch;
+
+    return params;
+    
+  }, [debouncedSearch, filters, debouncedYear]);
+
+  const {cars, addCar, deleteCar, updateCar, colors, page, setPage, limit } = useCars( filterParams );
+
+
+  useEffect(() => {
+    setPage(1);
+  }, [filterParams]);
+
 
   const handleCreateCar = () => {
     setSelectedCar(null);
@@ -58,25 +94,37 @@ function CarList() {
     }
   };
 
+  const clearFilters = () => {
+    setFilters({
+      color: "",
+      model: "",
+      year: 0,
+    });
+  };
+
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  };
+
   return (
     <Container maxWidth="xl" sx={{ py: 1 }}>
-      <Paper 
-        elevation={3} 
-        sx={{ 
+      <Paper
+        elevation={3}
+        sx={{
           borderRadius: 3,
-          overflow: 'hidden',
-          backgroundColor: 'white'
+          overflow: "hidden",
+          backgroundColor: "white",
         }}
       >
         <Box
           sx={{
             p: 4,
-            bgcolor: 'primary.main',
-            color: 'white',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
+            bgcolor: "primary.main",
+            color: "white",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
             gap: 2,
           }}
         >
@@ -91,22 +139,22 @@ function CarList() {
               </Typography>
             </Box>
           </Box>
-          <Button 
-            variant="contained" 
-            onClick={handleCreateCar} 
+          <Button
+            variant="contained"
+            onClick={handleCreateCar}
             size="large"
             sx={{
-              bgcolor: 'white',
-              color: 'primary.main',
-              '&:hover': {
-                bgcolor: 'grey.100',
+              bgcolor: "white",
+              color: "primary.main",
+              "&:hover": {
+                bgcolor: "grey.100",
               },
               px: 3,
               py: 1.5,
               borderRadius: 2,
-              fontWeight: 'bold',
-              textTransform: 'none',
-              fontSize: '1rem',
+              fontWeight: "bold",
+              textTransform: "none",
+              fontSize: "1rem",
             }}
             startIcon={<FaPlus />}
           >
@@ -114,14 +162,91 @@ function CarList() {
           </Button>
         </Box>
 
-        {/* Content Section */}
+        <Box display="flex" justifyContent="space-between" alignItems="center" gap={2} sx={{ p: 4 }}>
+         
+         <FormControl fullWidth>
+            <TextField
+              id="outlined-basic"
+              label="Search by model .."
+              variant="outlined"
+              type="text"
+              value={filters.model}
+              onChange={(e) => setFilters({ ...filters, model: e.target.value })}
+            />
+         </FormControl>
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Color</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={filters.color}
+              label="Color"
+              onChange={(e) => setFilters({ ...filters, color: e.target.value })}
+            >
+              <MenuItem  value="">All</MenuItem>
+              {colors.map((color, index) => (
+                <MenuItem key={index} value={color.color}>
+                  {color.color}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth>
+            <TextField
+              fullWidth
+              type="number"
+              label="Year"
+              variant="outlined"
+              value={filters.year?.toString()}
+              onChange={(e) => setFilters({ ...filters, year: Number(e.target.value) })}
+              inputProps={{
+                min: 1886,
+                max: new Date().getFullYear(),
+                step: 1,
+              }}
+            />
+          </FormControl>
+
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            onClick={clearFilters}
+            startIcon={<FaTimes />}
+            sx={{
+              bgcolor: "#fff",
+              color: "primary.main",
+              borderColor: "primary.main",
+              px: 3,
+              py: 1.4,
+              borderRadius: 3,
+              fontWeight: 600,
+              textTransform: "none",
+              fontSize: "0.95rem",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+              transition: "all 0.25s ease",
+
+              "&:hover": {
+                bgcolor: "primary.main",
+                color: "#fff",
+                borderColor: "primary.main",
+                boxShadow: "0 6px 16px rgba(25,118,210,0.35)",
+                transform: "translateY(-1px)",
+              },
+            }}
+          >
+          </Button>
+
+        </Box>
+
         <Box sx={{ p: 3 }}>
-          {cars.length === 0 ? (
-            <Box 
-              display="flex" 
-              flexDirection="column" 
-              alignItems="center" 
-              justifyContent="center" 
+          {cars.data.length === 0 ? (
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
               py={8}
               gap={2}
             >
@@ -129,8 +254,8 @@ function CarList() {
               <Typography variant="h6" color="textSecondary">
                 No cars found in inventory
               </Typography>
-              <Button 
-                variant="outlined" 
+              <Button
+                variant="outlined"
                 onClick={handleCreateCar}
                 startIcon={<FaPlus />}
                 sx={{ mt: 2 }}
@@ -139,58 +264,61 @@ function CarList() {
               </Button>
             </Box>
           ) : (
-            <Table sx={{ 
-              minWidth: 650,
-              '& .MuiTableCell-root': {
-                py: 2,
-              }
-            }}>
+            <>
+            <Table
+              sx={{
+                minWidth: 650,
+                "& .MuiTableCell-root": {
+                  py: 2,
+                },
+              }}
+            >
               <TableHead>
-                <TableRow sx={{ bgcolor: 'grey.50' }}>
-                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                <TableRow sx={{ bgcolor: "grey.50" }}>
+                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem" }}>
                     ID
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem" }}>
                     Model
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem" }}>
                     Color
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem" }}>
                     Year
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem" }}>
                     Features
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                  <TableCell sx={{ fontWeight: "bold", fontSize: "1rem" }}>
                     Actions
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {cars.map((car: Car) => {
+                {cars.data.map((car: Car) => {
                   const colorName = getColorName(car.color);
                   const hexColor = formatColorHex(car.color);
-                  
+
                   return (
                     <TableRow
                       key={car.car_id}
-                      sx={{ 
-                        '&:hover': {
-                          backgroundColor: 'grey.50',
-                          transition: 'background-color 0.2s',
+                      sx={{
+                        "&:hover": {
+                          backgroundColor: "grey.50",
+                          transition: "background-color 0.2s",
                         },
-                        '&:last-child td, &:last-child th': { border: 0 }
+                        "&:last-child td, &:last-child th": { border: 0 },
                       }}
                     >
                       <TableCell>
-                        <Chip 
+                        <Chip
                           label={`#${car.car_id}`}
                           size="small"
-                          sx={{ 
-                            fontWeight: 'bold',
-                            bgcolor: 'primary.light',
-                            color: 'white'
+                          sx={{
+                            fontWeight: "bold",
+                            bgcolor: "primary.light",
+                            color: "white",
                           }}
                         />
                       </TableCell>
@@ -200,11 +328,7 @@ function CarList() {
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Box 
-                          display="flex" 
-                          alignItems="center" 
-                          gap={2}
-                        >
+                        <Box display="flex" alignItems="center" gap={2}>
                           <Tooltip title={`${colorName} (${hexColor})`}>
                             <Box
                               width={28}
@@ -215,7 +339,7 @@ function CarList() {
                               boxShadow={1}
                               sx={{
                                 background: `radial-gradient(circle at 30% 30%, ${hexColor} 0%, ${hexColor} 40%, transparent 70%)`,
-                                cursor: 'pointer',
+                                cursor: "pointer",
                               }}
                             />
                           </Tooltip>
@@ -230,15 +354,15 @@ function CarList() {
                         </Box>
                       </TableCell>
                       <TableCell>
-                        <Chip 
-                          label={car.year ? new Date(car.year).getFullYear() : "N/A"}
-                          variant="outlined"
-                          sx={{
-                            borderColor: 'primary.main',
-                            color: 'primary.main',
-                            fontWeight: 'medium'
-                          }}
-                        />
+                        <Chip
+                        label={car.year_purchased ?? "N/A"}
+                        variant="outlined"
+                        sx={{
+                          borderColor: "primary.main",
+                          color: "primary.main",
+                          fontWeight: "medium",
+                        }}
+                      />
                       </TableCell>
                       <TableCell>
                         <Box display="flex" gap={1} flexWrap="wrap">
@@ -259,14 +383,14 @@ function CarList() {
                                       ];
                                       return colors[index % colors.length];
                                     },
-                                    color: 'white',
-                                    fontWeight: 'medium',
-                                    '& .MuiChip-label': {
+                                    color: "white",
+                                    fontWeight: "medium",
+                                    "& .MuiChip-label": {
                                       px: 1,
                                     },
-                                    maxWidth: '120px',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
+                                    maxWidth: "120px",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
                                   }}
                                 />
                               </Tooltip>
@@ -276,7 +400,7 @@ function CarList() {
                               label="No features"
                               size="small"
                               variant="outlined"
-                              sx={{ color: 'text.secondary' }}
+                              sx={{ color: "text.secondary" }}
                             />
                           )}
                         </Box>
@@ -284,14 +408,14 @@ function CarList() {
                       <TableCell>
                         <Box display="flex" gap={1}>
                           <Tooltip title="Edit Car">
-                            <IconButton 
-                              onClick={() => handleEditCar(car)} 
+                            <IconButton
+                              onClick={() => handleEditCar(car)}
                               size="medium"
                               sx={{
-                                bgcolor: 'primary.light',
-                                color: 'white',
-                                '&:hover': {
-                                  bgcolor: 'primary.main',
+                                bgcolor: "primary.light",
+                                color: "white",
+                                "&:hover": {
+                                  bgcolor: "primary.main",
                                 },
                                 borderRadius: 2,
                                 p: 1.2,
@@ -301,14 +425,14 @@ function CarList() {
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Delete Car">
-                            <IconButton 
-                              onClick={() => handleDeleteCar(car.car_id!)} 
+                            <IconButton
+                              onClick={() => handleDeleteCar(car.car_id!)}
                               size="medium"
                               sx={{
-                                bgcolor: 'error.light',
-                                color: 'white',
-                                '&:hover': {
-                                  bgcolor: 'error.main',
+                                bgcolor: "error.light",
+                                color: "white",
+                                "&:hover": {
+                                  bgcolor: "error.main",
                                 },
                                 borderRadius: 2,
                                 p: 1.2,
@@ -324,35 +448,46 @@ function CarList() {
                 })}
               </TableBody>
             </Table>
+            {cars.total > 0 && (
+                <Box mt={2} display="flex" justifyContent="center">
+                  <Pagination
+                    page={page}
+                    count={Math.ceil(cars.total / limit)}
+                    onChange={handlePageChange}
+                    color="primary"
+                  />
+                </Box>
+              )}
+            </>
           )}
 
-          {/* Summary Footer */}
-          {cars.length > 0 && (
-            <Box 
-              sx={{ 
-                mt: 3, 
-                p: 2, 
-                bgcolor: 'grey.50', 
+          {cars.data.length > 0 && (
+            <Box
+              sx={{
+                mt: 3,
+                p: 2,
+                bgcolor: "grey.50",
                 borderRadius: 2,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
                 gap: 2,
               }}
             >
               <Typography variant="body2" color="textSecondary">
-                Showing <strong>{cars.length}</strong> car{cars.length !== 1 ? 's' : ''} in inventory
+                Showing <strong>{cars.data.length}</strong> car
+                {cars.data.length !== 1 ? "s" : ""} in inventory
               </Typography>
               <Box display="flex" gap={1} alignItems="center">
-                <Chip 
-                  label="Total Cars" 
-                  size="small" 
+                <Chip
+                  label="Total Cars"
+                  size="small"
                   color="primary"
                   variant="outlined"
                 />
                 <Typography variant="h6" color="primary" fontWeight="bold">
-                  {cars.length}
+                  {cars.data.length}
                 </Typography>
               </Box>
             </Box>

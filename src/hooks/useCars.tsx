@@ -1,14 +1,46 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../apiClient/apiClient";
-import type { Car, ReqCar } from "../types/types";
+import type { Car, FilterParams, ReqCar } from "../types/types";
+import { useState } from "react";
 
-function useCars() {
+
+function useCars(filterParams?: FilterParams) {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
   
-  const { data: cars = [] } = useQuery({
-    queryKey: ["cars"], 
+  const { data: cars = { data: [], total: 0 } } = useQuery({
+    queryKey: ["cars", filterParams, page], 
     queryFn: async () => {
-      const res = await apiClient.get<Car[]>("/cars");
+      const params = new URLSearchParams();
+      
+      if (filterParams?.model?.trim()) {
+        params.set("model", filterParams.model.trim());
+      }
+      if (filterParams?.color && filterParams.color !== "ALL") {
+        params.set("color", filterParams.color);
+      }
+      if (filterParams?.year) {
+        params.set("year", filterParams.year.toString());
+      }
+
+      params.set("page", page.toString());
+      params.set("limit", limit.toString());
+
+      const res = await apiClient.get(`/cars?${params.toString()}`);
+      return res.data;
+    },
+    placeholderData: (prev) => prev,
+    staleTime: 30000, 
+  });
+
+
+
+  const { data: colors = [] } = useQuery({
+    queryKey: ["colors"], 
+    queryFn: async () => {
+      const res = await apiClient.get<Car[]>("/cars/colors");
       return res.data;
     },
   });
@@ -46,8 +78,14 @@ function useCars() {
     },
   });
 
+
+
   return { 
     cars,
+    colors,
+    page,
+    setPage,
+    limit,
     isLoading: cars.length === 0, 
     addCar: addCarMutation.mutate,
     deleteCar: deleteCarMutation.mutate,

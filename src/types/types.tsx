@@ -61,13 +61,26 @@ export interface Car {
   car_id: number;
   model: string;
   color: string;
-  year: string;
+  year_purchased: number;
   details: Details[];
 }
 
 export interface ReqCar {
   model: string;
   color: string;
-  year: string;
+  year_purchased: number;
   details: Details[];
+}
+
+
+export interface FilterState {
+  model: string;
+  color: string;
+  year: number;
+}
+
+export interface FilterParams{
+  model?: string;
+  color?: string;
+  year?: number;
 }

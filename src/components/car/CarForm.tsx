@@ -82,7 +82,7 @@ const CarModal: React.FC<Props> = ({
       reset({
         model: editingCar.model,
         color: editingCar.color,
-        year: editingCar.year,
+        year: editingCar.year_purchased.toString(),
         details: editingCar.details.map((d) => ({
           name: d.name,
         })),
@@ -97,17 +97,6 @@ const CarModal: React.FC<Props> = ({
     }
   }, [editingCar, reset, isOpen]);
 
-  const validateYear = (value: string) => {
-    if (!value) return "Year is required";
-    const year = new Date(value).getFullYear();
-    const currentYear = new Date().getFullYear();
-    if (isNaN(year)) return "Please enter a valid date";
-    if (year < 1886 || year > currentYear + 1) {
-      return `Please enter a year between 1886 and ${currentYear + 1}`;
-    }
-    return true;
-  };
-
   const submitHandler = (data: CarFormData) => {
     const formattedDetails: Details[] = data.details
       .filter((d) => d.name.trim() !== "")
@@ -118,7 +107,7 @@ const CarModal: React.FC<Props> = ({
     const reqCar: ReqCar = {
       model: data.model.trim(),
       color: data.color.trim(),
-      year: data.year,
+      year_purchased: data.year ? Number(data.year) : 0,
       details: formattedDetails,
     };
 
@@ -274,34 +263,32 @@ const CarModal: React.FC<Props> = ({
             {/* Year Field */}
             <Box sx={{ flex: 1 }}>
               <TextField
-                fullWidth
-                label="Manufacturing Year"
-                type="date"
-                variant="outlined"
-                error={!!errors.year}
-                helperText={errors.year?.message}
-                InputLabelProps={{ shrink: true }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <FaCalendarAlt color="#666" />
-                    </InputAdornment>
-                  ),
-                }}
-                {...register("year", {
-                  required: "Year is required",
-                  validate: validateYear,
-                })}
-                inputProps={{
-                  max: `${new Date().getFullYear() + 1}-12-31`,
-                  min: "1886-01-01",
-                }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: 2,
-                  },
-                }}
-              />
+                  fullWidth
+                  label="Manufacturing Year"
+                  type="number"
+                  variant="outlined"
+                  error={!!errors.year}
+                  helperText={errors.year?.message}
+                  InputLabelProps={{ shrink: true }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <FaCalendarAlt color="#666" />
+                      </InputAdornment>
+                    ),
+                  }}
+                  {...register("year", {
+                    required: "Year is required",
+                    min: { value: 1886, message: "Year must be >= 1886" },
+                    max: { value: new Date().getFullYear(), message: `Year cannot be > ${new Date().getFullYear()}` },
+                  })}
+                  inputProps={{
+                    step: 1,
+                  }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": { borderRadius: 2 },
+                  }}
+                />
               {watch("year") && (
                 <FormHelperText sx={{ ml: 2, mt: 0.5 }}>
                   Selected year: {formatDateToYear(watch("year"))}
@@ -388,6 +375,9 @@ const CarModal: React.FC<Props> = ({
               ) : (
                 <Box
                   sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
                     textAlign: "center",
                     py: 4,
                     bgcolor: "white",
@@ -397,7 +387,7 @@ const CarModal: React.FC<Props> = ({
                     mb: 2,
                   }}
                 >
-                  <FaCog size={48} color="#9e9e9e" />
+                  <FaCog  size={48} color="#9e9e9e" />
                   <Typography variant="body1" color="textSecondary" mt={2}>
                     No features added yet
                   </Typography>
