@@ -10,7 +10,7 @@ import {
   Typography,
   InputAdornment,
 } from "@mui/material";
-import { Wallet } from "react-bootstrap-icons";
+import { FaWallet } from "react-icons/fa";
 
 interface Props {
   open: boolean;
@@ -69,7 +69,7 @@ function RepaymentForm({ open, handleClose, onSubmit }: Props) {
       >
         <DialogTitle sx={{ color: "inherit", py: 2.5 }}>
           <Box display="flex" alignItems="center" gap={1.5}>
-            <Wallet size={24} />
+            <FaWallet size={24} />
             <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
               Debt Repayment
             </Typography>

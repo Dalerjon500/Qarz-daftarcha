@@ -10,7 +10,7 @@ import {
   Typography,
   InputAdornment,
 } from "@mui/material";
-import { CurrencyDollar } from "react-bootstrap-icons";
+import { FaDollarSign } from "react-icons/fa";
 
 interface Props {
   open: boolean;
@@ -69,7 +69,7 @@ function DebtForm({ open, handleClose, onSubmit }: Props) {
       >
         <DialogTitle sx={{ color: "inherit", py: 2.5 }}>
           <Box display="flex" alignItems="center" gap={1.5}>
-            <CurrencyDollar size={24} />
+            <FaDollarSign size={24} />
             <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
               Add New Debt
             </Typography>
