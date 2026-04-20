@@ -11,8 +11,7 @@ function App() {
     <div>
       <Routes>
           <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/debtor" element={<DebtorList />} />
+            <Route path="/" element={<DebtorList />} />
             <Route path="/debtor/:id" element={<DebtorPage />} />
           </Route>
       </Routes>

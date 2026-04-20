@@ -1,99 +1,152 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../apiClient/apiClient";
-import type { Debt, Debtor, ReqDebt, ReqDebtor } from "../types/types";
+import type {
+  Qarz,
+  Qarzdor,
+  ReqQarz,
+  ReqQarzdor,
+} from "../types/types";
 
-function useDebtor(debtorId?: number) {
+function useQarzdor(qarzdorId?: number) {
   const queryClient = useQueryClient();
-  
-  const { data: debtors = [], isLoading: debtorsLoading } = useQuery({
-    queryKey: ["debtors"],
+
+  /* =======================
+     BARCHA QARZDORLAR
+  ======================= */
+  const {
+    data: qarzdorlar = [],
+    isLoading: qarzdorlarLoading,
+  } = useQuery({
+    queryKey: ["qarzdorlar"],
     queryFn: async () => {
-      const res = await apiClient.get<Debtor[]>("/debtor");
+      const res = await apiClient.get<Qarzdor[]>("/qarzdor");
       return res.data;
     },
   });
 
-  const { data: debtor, isLoading: debtorLoading } = useQuery({
-    queryKey: ["debtor", debtorId],
+  /* =======================
+     BITTA QARZDOR
+  ======================= */
+  const {
+    data: qarzdor,
+    isLoading: qarzdorLoading,
+  } = useQuery({
+    queryKey: ["qarzdor", qarzdorId],
     queryFn: async () => {
-      if (!debtorId) return null;
-      const res = await apiClient.get<Debtor>(`/debtor/${debtorId}`);
+      const res = await apiClient.get<Qarzdor>(`/qarzdor/${qarzdorId}`);
       return res.data;
     },
-    enabled: !!debtorId,
+    enabled: !!qarzdorId,
   });
 
-  const addDebtorMutate = useMutation({
-    mutationFn: async (newDebtor: ReqDebtor) => {
-      const res = await apiClient.post<ReqDebtor>("/debtor", newDebtor);
+  /* =======================
+     QARZDOR QO‘SHISH
+  ======================= */
+  const addQarzdorMutate = useMutation({
+    mutationFn: async (newQarzdor: ReqQarzdor) => {
+      const res = await apiClient.post<Qarzdor>("/qarzdor", newQarzdor);
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["debtors"] });
+      queryClient.invalidateQueries({ queryKey: ["qarzdorlar"] });
     },
   });
 
-  const { data: debts = [], isLoading: debtsLoading } = useQuery({
-    queryKey: ["debts", debtorId],
+  /* =======================
+     QARZLAR RO‘YXATI
+  ======================= */
+  const {
+    data: qarzlar = [],
+    isLoading: qarzlarLoading,
+  } = useQuery({
+    queryKey: ["qarzlar", qarzdorId],
     queryFn: async () => {
-      if (!debtorId) return [];
-      const res = await apiClient.get<Debt[]>(`/debtor/${debtorId}/debts`);
-      return res.data;
-    },
-    enabled: !!debtorId,
-  });
-
-  const addDebtToDebtorMutate = useMutation({
-    mutationFn: async (newDebt: ReqDebt) => {
-      const res = await apiClient.post<ReqDebt>(`/debtor/${debtorId}/debt`, newDebt);;
-      return res.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["debts", debtorId] });
-    },
-  });
-
-
-  const debtRepaymentMutate = useMutation({
-      mutationFn: async (amount : number) => {
-        const res = await apiClient.post(
-          `/debtor/${debtorId}/repayment`,
-          { amount }
-        );
-        return res.data;
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["debts", debtorId] });
-      },
-    });
-
-  const { data: debtsHistory = [], isLoading: debtsHistoryLoading } = useQuery({
-    queryKey: ["debts-history", debtorId],
-    queryFn: async () => {
-      if (!debtorId) return [];
-      const res = await apiClient.get(
-        `/debtor/${debtorId}/debts-history`
+      const res = await apiClient.get<Qarz[]>(
+        `/qarzdor/${qarzdorId}/qarzlar`
       );
       return res.data;
     },
-    enabled: !!debtorId,
+    enabled: !!qarzdorId,
   });
 
+  /* =======================
+     QARZ QO‘SHISH (ADD DEBT)
+  ======================= */
+  const addQarzToQarzdorMutate = useMutation({
+    mutationFn: async (newQarz: ReqQarz) => {
+      const res = await apiClient.post(
+        `/qarzdor/${qarzdorId}/qarz`,
+        newQarz
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["qarzlar", qarzdorId] });
+      queryClient.invalidateQueries({ queryKey: ["qarzdor", qarzdorId] });
+      queryClient.invalidateQueries({ queryKey: ["qarzdorlar"] });
+    },
+  });
 
-  
-  return { 
-    debtors, 
-    debtorsLoading,
-    debtor,
-    debts,
-    debtorLoading,
-    debtsLoading,
-    addDebtor: addDebtorMutate.mutate,
-    addDebtToDebtor: addDebtToDebtorMutate.mutate,
-    debtRepayment: debtRepaymentMutate.mutate,
-    debtsHistory,
-    debtsHistoryLoading
+  /* =======================
+     QARZ TO‘LASH (REPAYMENT)
+     MUHIM: qarz_id + miqdor
+  ======================= */
+  const qarzRepaymentMutate = useMutation({
+    mutationFn: async (data: { qarz_id: number; miqdor: number }) => {
+      const res = await apiClient.post(
+        `/qarzdor/${qarzdorId}/repayment`,
+        {
+          qarz_id: data.qarz_id,
+          miqdor: data.miqdor,
+        }
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["qarzlar", qarzdorId] });
+      queryClient.invalidateQueries({ queryKey: ["qarzdor", qarzdorId] });
+      queryClient.invalidateQueries({ queryKey: ["qarzlar-history", qarzdorId] });
+    },
+  });
+
+  /* =======================
+     QARZLAR TARIXI
+  ======================= */
+  const {
+    data: qarzlarHistory = [],
+    isLoading: qarzlarHistoryLoading,
+  } = useQuery({
+    queryKey: ["qarzlar-history", qarzdorId],
+    queryFn: async () => {
+      const res = await apiClient.get(
+        `/qarzdor/${qarzdorId}/qarzlar-history`
+      );
+      return res.data;
+    },
+    enabled: !!qarzdorId,
+  });
+
+  /* =======================
+     RETURN
+  ======================= */
+  return {
+    // data
+    qarzdorlar,
+    qarzdor,
+    qarzlar,
+    qarzlarHistory,
+
+    // loading
+    qarzdorlarLoading,
+    qarzdorLoading,
+    qarzlarLoading,
+    qarzlarHistoryLoading,
+
+    // actions
+    addQarzdor: addQarzdorMutate.mutate,
+    addQarzToQarzdor: addQarzToQarzdorMutate.mutate,
+    qarzRepayment: qarzRepaymentMutate.mutate,
   };
 }
 
-export default useDebtor;
+export default useQarzdor;

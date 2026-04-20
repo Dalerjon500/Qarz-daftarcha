@@ -1,7 +1,12 @@
-import { Dialog, DialogContent, DialogActions, Box, Typography, Button, IconButton } from "@mui/material";
-import { FaCheckCircle, FaTimes } from "react-icons/fa";
-
-
+import {
+  Dialog,
+  DialogContent,
+  Box,
+  Typography,
+  Button,
+  IconButton,
+} from "@mui/material";
+import { FaCheck, FaTimes } from "react-icons/fa";
 
 function AllPaidModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
@@ -11,133 +16,121 @@ function AllPaidModal({ open, onClose }: { open: boolean; onClose: () => void })
       maxWidth="xs"
       PaperProps={{
         sx: {
-          borderRadius: 3,
-          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-          overflow: 'hidden',
-          position: 'relative',
-        }
+          borderRadius: 4,
+          background: "rgba(20, 20, 20, 0.85)",
+          backdropFilter: "blur(16px)",
+          boxShadow: "0 30px 80px rgba(0,0,0,0.6)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          overflow: "hidden",
+        },
       }}
     >
-      {/* Header qismi */}
-      <Box
+      {/* Close */}
+      <IconButton
+        onClick={onClose}
         sx={{
-          background: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
-          color: 'white',
-          py: 2,
-          px: 3,
-          position: 'relative',
+          position: "absolute",
+          top: 10,
+          right: 10,
+          color: "rgba(255,255,255,0.6)",
+          "&:hover": { color: "#fff" },
         }}
       >
-        <IconButton
-          onClick={onClose}
+        <FaTimes />
+      </IconButton>
+
+      <DialogContent sx={{ px: 4, py: 5 }}>
+        {/* Icon */}
+        <Box
           sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: 'white',
-            '&:hover': {
-              backgroundColor: 'rgba(255,255,255,0.1)',
-            }
+            width: 90,
+            height: 90,
+            mx: "auto",
+            mb: 3,
+            borderRadius: "50%",
+            background:
+              "linear-gradient(135deg, #00E676 0%, #1DE9B6 100%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 0 40px rgba(0,230,118,0.6)",
           }}
         >
-          <FaTimes />
-        </IconButton>
-        
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box
-            sx={{
-              width: 50,
-              height: 50,
-              borderRadius: '50%',
-              backgroundColor: 'rgba(255,255,255,0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <FaCheckCircle size={24} />
-          </Box>
-          <Box>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              All Debts Paid!
-            </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.9 }}>
-              Congratulations on clearing all debts
-            </Typography>
-          </Box>
+          <FaCheck size={38} color="#0B1F14" />
         </Box>
-      </Box>
 
-      <DialogContent sx={{ py: 3, px: 3 }}>
-        <Box sx={{ textAlign: 'center', py: 2 }}>
-          <Box
-            sx={{
-              width: 80,
-              height: 80,
-              borderRadius: '50%',
-              backgroundColor: 'rgba(76, 175, 80, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 16px',
-            }}
-          >
-            <FaCheckCircle size={36} color="#4CAF50" />
-          </Box>
-          
-          <Typography variant="h5" sx={{ fontWeight: 700, mb: 1, color: '#2E7D32' }}>
-            🎉 Outstanding!
-          </Typography>
-          
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            All debts have been fully paid. You're debt-free!
-          </Typography>
+        {/* Title */}
+        <Typography
+          align="center"
+          sx={{
+            fontSize: "1.6rem",
+            fontWeight: 800,
+            color: "#fff",
+            mb: 1,
+          }}
+        >
+          Debt Free Status
+        </Typography>
 
-          <Box
-            sx={{
-              backgroundColor: '#F0F9F0',
-              borderRadius: 2,
-              p: 2,
-              border: '1px solid #C8E6C9',
-              textAlign: 'left',
-            }}
-          >
-            <Typography variant="body2" sx={{ fontWeight: 500, color: '#2E7D32', mb: 1 }}>
-              💡 Suggestions:
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.9rem' }}>
-              • Start saving for future goals<br />
-              • Consider investment opportunities<br />
-              • Build an emergency fund<br />
-              • Plan your next financial milestone
-            </Typography>
-          </Box>
+        <Typography
+          align="center"
+          sx={{
+            color: "rgba(255,255,255,0.7)",
+            fontSize: "0.95rem",
+            mb: 4,
+          }}
+        >
+          Every outstanding balance has been successfully cleared.
+        </Typography>
+
+        {/* Info Cards */}
+        <Box sx={{ display: "grid", gap: 1.5 }}>
+          {[
+            "No active debts",
+            "Clean financial history",
+            "You’re in full control",
+          ].map((text) => (
+            <Box
+              key={text}
+              sx={{
+                px: 2,
+                py: 1.5,
+                borderRadius: 2,
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "#E0F2F1",
+                fontSize: "0.85rem",
+              }}
+            >
+              ✔ {text}
+            </Box>
+          ))}
         </Box>
-      </DialogContent>
 
-      <DialogActions sx={{ px: 3, pb: 3, pt: 0 }}>
+        {/* Action */}
         <Button
-          onClick={onClose}
-          variant="contained"
           fullWidth
+          onClick={onClose}
           sx={{
-            borderRadius: 2,
-            py: 1.5,
-            textTransform: 'none',
+            mt: 4,
+            py: 1.6,
+            borderRadius: 3,
             fontWeight: 700,
-            fontSize: '1rem',
-            background: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
-            boxShadow: '0 4px 12px rgba(76, 175, 80, 0.3)',
-            '&:hover': {
-              boxShadow: '0 6px 16px rgba(76, 175, 80, 0.4)',
-              transform: 'translateY(-1px)',
+            fontSize: "0.95rem",
+            color: "#0B1F14",
+            background:
+              "linear-gradient(135deg, #00E676 0%, #1DE9B6 100%)",
+            boxShadow: "0 10px 30px rgba(0,230,118,0.4)",
+            "&:hover": {
+              boxShadow: "0 14px 40px rgba(0,230,118,0.6)",
+              transform: "translateY(-2px)",
             },
-            transition: 'all 0.3s ease',
+            transition: "all .3s ease",
           }}
         >
-          Continue
+          Back to Dashboard
         </Button>
-      </DialogActions>
+      </DialogContent>
     </Dialog>
   );
 }

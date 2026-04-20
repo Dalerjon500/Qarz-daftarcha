@@ -35,12 +35,12 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import { formatCurrency, formatDateTime, getStatusColor, getStatusIcon, getStatusText } from "../../utils";
-import type { DebtsHistory } from "../../types/types";
+import type { QarzlarHistory } from "../../types/types";
 
 interface Props {
   open: boolean;
   handleClose: () => void;
-  debtsHistory: DebtsHistory[];
+  debtsHistory: QarzlarHistory[];
 }
 
 type Payment = {
@@ -157,13 +157,13 @@ function PaymentHistoryModal({ open, handleClose, debtsHistory }: Props) {
           <Stack spacing={3}>
             {debtsHistory.map((debt) => {
               const totalPaid = calculateTotalPayments(debt.payments);
-              const remaining = calculateRemaining(debt.amount, debt.payments);
-              const paidPercentage = (totalPaid / debt.amount) * 100;
+              const remaining = calculateRemaining(debt.miqdor, debt.payments);
+              const paidPercentage = (totalPaid / debt.miqdor) * 100;
               const isFullyPaid = remaining <= 0;
 
               return (
                 <Card
-                  key={debt.debt_id}
+                  key={debt.qarz_id}
                   elevation={0}
                   sx={{
                     borderRadius: 3,
@@ -189,12 +189,12 @@ function PaymentHistoryModal({ open, handleClose, debtsHistory }: Props) {
                         sx={{
                           bgcolor: isFullyPaid
                             ? green[100]
-                            : debt.status
+                            : debt.holati
                             ? orange[100]
                             : red[100],
                           color: isFullyPaid
                             ? green[700]
-                            : debt.status
+                            : debt.holati
                             ? orange[700]
                             : red[700],
                           width: 48,
@@ -212,16 +212,16 @@ function PaymentHistoryModal({ open, handleClose, debtsHistory }: Props) {
                     title={
                       <Box display="flex" alignItems="center" gap={1.5} flexWrap="wrap">
                         <Typography variant="h6" fontWeight="700">
-                          Debt #{debt.debt_id}
+                          Debt #{debt.qarz_id}
                         </Typography>
                         <Chip
-                          icon={getStatusIcon(debt.status, remaining)}
-                          label={getStatusText(debt.status, remaining)}
+                          icon={getStatusIcon(debt.holati, remaining)}
+                          label={getStatusText(debt.holati, remaining)}
                           size="small"
                           sx={{
-                            bgcolor: getStatusColor(debt.status, remaining) + '20',
-                            color: getStatusColor(debt.status, remaining),
-                            borderColor: getStatusColor(debt.status, remaining),
+                            bgcolor: getStatusColor(debt.holati, remaining) + '20',
+                            color: getStatusColor(debt.holati, remaining),
+                            borderColor: getStatusColor(debt.holati, remaining),
                             fontWeight: 600,
                             height: 28,
                           }}
@@ -233,14 +233,14 @@ function PaymentHistoryModal({ open, handleClose, debtsHistory }: Props) {
                       <Box display="flex" alignItems="center" gap={1.5} mt={1.5} flexWrap="wrap">
                         <Chip
                           icon={<FaCalendarAlt size={12} style={{ marginLeft: 4 }} />}
-                          label={formatDateTime(debt.date_time)}
+                          label={formatDateTime(debt.datetime)}
                           size="small"
                           variant="outlined"
                           sx={{ fontWeight: 500 }}
                         />
                         <Chip
                           icon={<FaFileInvoiceDollar size={12} style={{ marginLeft: 4 }} />}
-                          label={`Debt: ${formatCurrency(debt.amount)} | Paid: ${formatCurrency(totalPaid)}`}
+                          label={`Debt: ${formatCurrency(debt.miqdor)} | Paid: ${formatCurrency(totalPaid)}`}
                           size="small"
                           color="primary"
                           sx={{ fontWeight: 600 }}
@@ -409,7 +409,7 @@ function PaymentHistoryModal({ open, handleClose, debtsHistory }: Props) {
                               <ListItemText
                                 primary={
                                   <Typography variant="body2" fontWeight="700" color="text.primary">
-                                    {formatCurrency(payment.amount)}
+                                    {formatCurrency(payment.miqdor)}
                                   </Typography>
                                 }
                                 secondary={
@@ -421,7 +421,7 @@ function PaymentHistoryModal({ open, handleClose, debtsHistory }: Props) {
                                     sx={{ mt: 0.5 }}
                                   >
                                     <FaCalendarAlt style={{ marginRight: 4, fontSize: 10 }} />
-                                    {formatDateTime(payment.date_time)}
+                                    {formatDateTime(payment.datetime)}
                                   </Typography>
                                 }
                               />
@@ -508,7 +508,7 @@ function PaymentHistoryModal({ open, handleClose, debtsHistory }: Props) {
                             </Typography>
                             <Typography variant="body2" fontWeight="700" color="text.primary">
                               {formatDateTime(
-                                debt.payments[debt.payments.length - 1].date_time
+                                debt.payments[debt.payments.length - 1].datetime
                               )}
                             </Typography>
                           </Box>

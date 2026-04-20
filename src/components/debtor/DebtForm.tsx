@@ -1,16 +1,17 @@
 import { useForm, Controller } from "react-hook-form";
+
 import {
-  Button,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
-  TextField,
   Box,
   Typography,
+  TextField,
+  Button,
   InputAdornment,
+  IconButton,
 } from "@mui/material";
-import { FaDollarSign } from "react-icons/fa";
+
+import { FaTimes, FaWallet } from "react-icons/fa";
 
 interface Props {
   open: boolean;
@@ -28,181 +29,187 @@ function DebtForm({ open, handleClose, onSubmit }: Props) {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm<FormData>({
-    defaultValues: {
-      amount: "",
-    },
+    defaultValues: { amount: "" },
   });
+
+  const amountValue = watch("amount");
 
   const onFormSubmit = (data: FormData) => {
     if (!data.amount) return;
-    
     onSubmit(Number(data.amount));
     handleClose();
     reset();
   };
 
-  const handleDialogClose = () => {
+  const closeModal = () => {
     handleClose();
     reset();
   };
 
   return (
-    <Dialog 
-      open={open} 
-      onClose={handleDialogClose} 
-      maxWidth="xs" 
+    <Dialog
+      open={open}
+      onClose={closeModal}
+      maxWidth="xs"
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: 2,
-          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-        }
+          borderRadius: 4,
+          background: "rgba(15, 23, 42, 0.85)",
+          backdropFilter: "blur(18px)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          color: "#fff",
+        },
       }}
     >
+      {/* HEADER */}
       <Box
         sx={{
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-          color: "white",
+          p: 3,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
         }}
       >
-        <DialogTitle sx={{ color: "inherit", py: 2.5 }}>
-          <Box display="flex" alignItems="center" gap={1.5}>
-            <FaDollarSign size={24} />
-            <Typography variant="h6" component="div" sx={{ fontWeight: 600 }}>
-              Add New Debt
+        <Box display="flex" alignItems="center" gap={1.5}>
+          <Box
+            sx={{
+              width: 42,
+              height: 42,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg,#00E5FF,#2979FF)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#000",
+            }}
+          >
+            <FaWallet />
+          </Box>
+
+          <Box>
+            <Typography fontWeight={700}>Add Debt</Typography>
+            <Typography fontSize=".75rem" color="rgba(255,255,255,.6)">
+              Register a new debt record
             </Typography>
           </Box>
-          <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5, fontWeight: 300 }}>
-            Enter the debt amount you want to add
-          </Typography>
-        </DialogTitle>
+        </Box>
+
+        <IconButton onClick={closeModal} sx={{ color: "#fff" }}>
+          <FaTimes />
+        </IconButton>
       </Box>
-      
-      <DialogContent sx={{ py: 3, px: 3 }}>
+
+      <DialogContent sx={{ px: 3, pb: 3 }}>
+        {/* AMOUNT PREVIEW */}
+        <Box
+          sx={{
+            mb: 3,
+            p: 2,
+            borderRadius: 3,
+            background: "rgba(255,255,255,0.05)",
+            border: "1px dashed rgba(255,255,255,0.15)",
+            textAlign: "center",
+          }}
+        >
+          <Typography fontSize=".75rem" color="rgba(255,255,255,.6)">
+            Amount
+          </Typography>
+          <Typography fontSize="1.8rem" fontWeight={800}>
+            ${amountValue || "0.00"}
+          </Typography>
+        </Box>
+
         <form onSubmit={handleSubmit(onFormSubmit)} noValidate>
           <Controller
             name="amount"
             control={control}
             rules={{
               required: "Amount is required",
-              min: {
-                value: 0.01,
-                message: "Amount must be greater than 0",
-              },
-              pattern: {
-                value: /^[0-9]+(\.[0-9]{1,2})?$/,
-                message: "Please enter a valid amount (e.g., 100.50)",
-              },
-              validate: (value) => {
-                const numValue = Number(value);
-                if (numValue > 1000000) {
-                  return "Amount is too large";
-                }
-                return true;
-              }
+              min: { value: 0.01, message: "Must be greater than 0" },
             }}
             render={({ field }) => (
               <TextField
                 {...field}
-                autoFocus
-                margin="normal"
-                label="Amount"
-                type="number"
                 fullWidth
-                variant="outlined"
+                type="number"
+                placeholder="Enter amount"
                 error={!!errors.amount}
                 helperText={errors.amount?.message}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Typography color="text.secondary">$</Typography>
+                      <Typography color="rgba(255,255,255,.6)">$</Typography>
                     </InputAdornment>
                   ),
                   sx: {
-                    borderRadius: 2,
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#667eea",
+                    color: "#fff",
+                    borderRadius: 3,
+                    background: "rgba(255,255,255,0.04)",
+                    "& fieldset": {
+                      borderColor: "rgba(255,255,255,0.15)",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#00E5FF",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#2979FF",
                       borderWidth: 2,
                     },
-                    fontSize: 16,
-                    fontWeight: 500,
-                  }
-                }}
-                InputLabelProps={{
-                  shrink: true,
-                  sx: {
-                    fontSize: 15,
-                    "&.Mui-focused": {
-                      color: "#667eea",
-                    }
-                  }
-                }}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    "&:hover fieldset": {
-                      borderColor: "#764ba2",
-                    },
                   },
-                  mt: 0,
-                  mb: errors.amount ? 0.5 : 2,
                 }}
-                inputProps={{
-                  step: "0.01",
-                  min: "0.01",
-                  max: "1000000",
-                  placeholder: "0.00",
-                }}
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ min: 0.01, step: "0.01" }}
               />
             )}
           />
-          
-          <DialogActions sx={{ px: 0, pt: 2, gap: 1.5 }}>
+
+          {/* ACTIONS */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              mt: 4,
+            }}
+          >
             <Button
-              onClick={handleDialogClose}
-              variant="outlined"
+              fullWidth
+              onClick={closeModal}
               sx={{
-                borderRadius: 2,
-                px: 3,
-                py: 1,
+                py: 1.2,
+                borderRadius: 3,
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,0.2)",
                 textTransform: "none",
-                fontWeight: 500,
-                borderColor: "#e0e0e0",
-                color: "text.secondary",
                 "&:hover": {
-                  borderColor: "#667eea",
-                  backgroundColor: "rgba(102, 126, 234, 0.04)",
-                }
+                  background: "rgba(255,255,255,0.05)",
+                },
               }}
             >
               Cancel
             </Button>
+
             <Button
+              fullWidth
               type="submit"
-              variant="contained"
               disabled={isSubmitting}
               sx={{
-                borderRadius: 2,
-                px: 3,
-                py: 1,
+                py: 1.2,
+                borderRadius: 3,
+                fontWeight: 700,
                 textTransform: "none",
-                fontWeight: 500,
-                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                boxShadow: "0 4px 14px 0 rgba(102, 126, 234, 0.3)",
+                color: "#000",
+                background: "linear-gradient(135deg,#00E676,#1DE9B6)",
                 "&:hover": {
-                  boxShadow: "0 6px 20px rgba(102, 126, 234, 0.4)",
-                  background: "linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)",
+                  background: "linear-gradient(135deg,#00C853,#00E5FF)",
                 },
-                "&:disabled": {
-                  background: "#e0e0e0",
-                  color: "#9e9e9e",
-                }
               }}
             >
-              {isSubmitting ? "Saving..." : "Save Debt"}
+              {isSubmitting ? "Saving..." : "Add Debt"}
             </Button>
-          </DialogActions>
+          </Box>
         </form>
       </DialogContent>
     </Dialog>
