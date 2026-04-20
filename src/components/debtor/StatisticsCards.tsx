@@ -1,13 +1,13 @@
 import { Avatar, Box, Card, CardContent, LinearProgress, Typography } from "@mui/material";
 import { FaCheckCircle, FaClock, FaMoneyBillWave, FaReceipt } from "react-icons/fa";
-import type { Debt } from "../../types/types";
+import type { Qarz } from "../../types/types";
 
 interface Props {
     formatCurrency: (amount: number) => string;
     totalDebt: number;
     pendingDebt: number;
     paidDebt: number;
-    debts: Debt[];
+    debts: Qarz[];
 }
 
 function StatisticsCards({ formatCurrency, totalDebt, pendingDebt, paidDebt, debts }: Props) {

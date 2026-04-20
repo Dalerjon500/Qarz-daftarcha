@@ -1,13 +1,17 @@
-// import { useContext } from "react"
-// import { MyContext } from "../context/MyContext"
+type User = {
+  name?: string;
+  email?: string;
+  roles?: string[];
+};
 
+function useContextPro() {
+  return {
+    state: {
+      user: null as User | null,
+      isLoading: false,
+    },
+    dispatch: () => undefined,
+  };
+}
 
-// function useContextPro() {
-//     const context = useContext(MyContext)
-//     if (!context) {
-//         throw new Error("useContextPro must be used within a MyContextProvider")
-//     }
-//     return context
-// }
-
-// export default useContextPro
+export default useContextPro;

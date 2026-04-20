@@ -44,12 +44,12 @@ interface Props {
 }
 
 type Payment = {
-  amount: number;
+  miqdor: number;
 };
 
 function PaymentHistoryModal({ open, handleClose, debtsHistory }: Props) {
   const calculateTotalPayments = (payments: Payment[]) => {
-    return payments.reduce((sum, payment) => sum + payment.amount, 0);
+    return payments.reduce((sum, payment) => sum + payment.miqdor, 0);
   };
 
   const calculateRemaining = (debtAmount: number, payments: Payment[]) => {

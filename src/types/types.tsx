@@ -25,16 +25,14 @@ export interface ReqQarz{
 
 export interface QarzlarHistory {
   qarz_id: number;
-      qarzdor_id: number;
-      datetime: string;
-      miqdor: number;
-      holati: boolean;
-      payments: [
-        {
-          payment_history_id: number;
-          qarz_id: number;
-          datetime: string;
-          miqdor: number;
-        }
-      ];
+  qarzdor_id: number;
+  datetime: string;
+  miqdor: number;
+  holati: boolean;
+  payments: {
+    payment_history_id: number;
+    qarz_id: number;
+    datetime: string;
+    miqdor: number;
+  }[];
 }

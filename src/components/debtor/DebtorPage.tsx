@@ -40,6 +40,7 @@ function DebtorPage() {
 
   const [openDebt, setOpenDebt] = useState(false);
   const [openPay, setOpenPay] = useState(false);
+  const payableDebt = qarzlar.find((debt) => !debt.holati) ?? qarzlar[0];
 
   /* LOADING */
   if (qarzdorLoading || qarzlarLoading) {
@@ -238,7 +239,10 @@ function DebtorPage() {
         <RepaymentForm
           open={openPay}
           handleClose={() => setOpenPay(false)}
-          onSubmit={(amount: number) => qarzRepayment(amount)}
+          onSubmit={(amount: number) => {
+            if (!payableDebt) return;
+            qarzRepayment({ qarz_id: payableDebt.qarz_id, miqdor: amount });
+          }}
         />
       </Container>
     </Box>
